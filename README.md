@@ -67,7 +67,7 @@ plugins {
 gradleConventions {
     // Mutate ErrorProne / NullAway settings (defaults are pre-populated).
     errorproneArgs.add("-XepOpt:NullAway:ExcludedPackages=io.github.leanish.example")
-    // errorproneArgs.remove("-Xep:FutureReturnValueIgnored:OFF")
+    // errorproneArgs.add("-Xep:FutureReturnValueIgnored:OFF")
 
     // Custom JVM args for app run tasks or tests.
     javaExecJvmArgs.add("--enable-native-access=ALL-UNNAMED")

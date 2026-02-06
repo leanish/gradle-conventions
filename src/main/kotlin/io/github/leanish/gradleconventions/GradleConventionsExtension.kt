@@ -20,7 +20,6 @@ private val defaultSpotlessConfig = Action<SpotlessExtension> {
 private val defaultErrorproneArgs = listOf(
     "-Xep:NullAway:ERROR",
     "-XepOpt:NullAway:AnnotatedPackages=io.github.leanish",
-    "-Xep:FutureReturnValueIgnored:OFF",
 )
 private val defaultMinimumCoverage = "0.85".toBigDecimal()
 
