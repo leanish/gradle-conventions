@@ -26,7 +26,7 @@ The plugin exposes JDK knobs so you can control compiler, bytecode, and runtime 
 7. `jdkVersion` is a convenience setter that keeps compiler/bytecode/runtime aligned.
 
 ## Configuration reference
-Extension type: `io.github.leanish.gradleconventions.LeanishConventionsExtension` (configured via `leanishConventions { ... }`).
+Extension type: `io.github.leanish.gradleconventions.GradleConventionsExtension` (configured via `gradleConventions { ... }`).
 - `errorproneArgs`: Error Prone + NullAway arguments appended to the defaults.
 - `testJvmArgs`: JVM args applied to all `Test` tasks.
 - `javaExecJvmArgs`: JVM args applied to all `JavaExec` tasks (bootRun, etc.).
@@ -64,7 +64,7 @@ plugins {
     id("io.github.leanish.gradle-conventions")
 }
 
-leanishConventions {
+gradleConventions {
     // Mutate ErrorProne / NullAway settings (defaults are pre-populated).
     errorproneArgs.add("-XepOpt:NullAway:ExcludedPackages=io.github.leanish.example")
     // errorproneArgs.remove("-Xep:FutureReturnValueIgnored:OFF")
@@ -104,20 +104,20 @@ leanishConventions {
 }
 ```
 
-Note: mutations to `leanishConventions` must happen during Gradle configuration
+Note: mutations to `gradleConventions` must happen during Gradle configuration
 (i.e., inside the build script’s configuration phase). Changes made later (for example,
 inside `doFirst`/`doLast` task actions) will not be picked up.
 
 ## Coverage behavior
 - Enforces instruction coverage via `jacocoTestCoverageVerification`.
-- Default minimum is `0.85` unless overridden in `leanishConventions`.
+- Default minimum is `0.85` unless overridden in `gradleConventions`.
 - Set `-DexcludeTags=integration` (or any tags) to skip those tests and disable coverage verification.
 
 ## ErrorProne
 The conventions plugin applies `net.ltgt.errorprone` and adds Error Prone + NullAway dependencies automatically.
 It:
 - Adds `-XDaddTypeAnnotationsToSymbol=true`.
-- Configures ErrorProne with the args from `leanishConventions.errorproneArgs` (defaults included).
+- Configures ErrorProne with the args from `gradleConventions.errorproneArgs` (defaults included).
 - Disables ErrorProne for `compileTestJava`.
 
 ## Notes

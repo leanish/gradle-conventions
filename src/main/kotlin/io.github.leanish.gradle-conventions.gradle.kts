@@ -1,4 +1,4 @@
-import io.github.leanish.gradleconventions.LeanishConventionsExtension
+import io.github.leanish.gradleconventions.GradleConventionsExtension
 import java.io.File
 import org.gradle.api.JavaVersion
 import org.gradle.api.plugins.JavaPluginExtension
@@ -16,20 +16,20 @@ plugins {
     id("net.ltgt.errorprone")
 }
 
-val leanishConventions = extensions.create<LeanishConventionsExtension>("leanishConventions")
+val gradleConventions = extensions.create<GradleConventionsExtension>("gradleConventions")
 
-val compilerVersion: Provider<JavaLanguageVersion> = providers.provider { JavaLanguageVersion.of(leanishConventions.compilerJdkVersion) }
-val compilerVendor: Provider<JvmVendorSpec> = providers.provider { leanishConventions.compilerJdkVendor }
-val bytecodeVersion: Provider<Int> = providers.provider { leanishConventions.bytecodeJdkVersion }
-val runtimeVersion: Provider<JavaLanguageVersion> = providers.provider { JavaLanguageVersion.of(leanishConventions.runtimeJdkVersion) }
-val runtimeVendor: Provider<JvmVendorSpec> = providers.provider { leanishConventions.runtimeJdkVendor }
+val compilerVersion: Provider<JavaLanguageVersion> = providers.provider { JavaLanguageVersion.of(gradleConventions.compilerJdkVersion) }
+val compilerVendor: Provider<JvmVendorSpec> = providers.provider { gradleConventions.compilerJdkVendor }
+val bytecodeVersion: Provider<Int> = providers.provider { gradleConventions.bytecodeJdkVersion }
+val runtimeVersion: Provider<JavaLanguageVersion> = providers.provider { JavaLanguageVersion.of(gradleConventions.runtimeJdkVersion) }
+val runtimeVendor: Provider<JvmVendorSpec> = providers.provider { gradleConventions.runtimeJdkVendor }
 val excludedTags: List<String> = providers.systemProperty("excludeTags")
     .map { tags -> tags.split(',').map(String::trim).filter(String::isNotEmpty) }
     .getOrElse(emptyList())
 
 java {
     // Keep in sync with bytecodeJdkVersion for IDE/tooling metadata; javac uses options.release.
-    sourceCompatibility = JavaVersion.toVersion(leanishConventions.bytecodeJdkVersion)
+    sourceCompatibility = JavaVersion.toVersion(gradleConventions.bytecodeJdkVersion)
     toolchain {
         languageVersion.set(compilerVersion)
         vendor.set(compilerVendor)
@@ -144,11 +144,11 @@ tasks.withType<JavaCompile>().configureEach {
 
 afterEvaluate {
     spotless {
-        leanishConventions.spotlessConfig.execute(this)
+        gradleConventions.spotlessConfig.execute(this)
     }
 
     extensions.configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.toVersion(leanishConventions.bytecodeJdkVersion)
+        sourceCompatibility = JavaVersion.toVersion(gradleConventions.bytecodeJdkVersion)
     }
 
     tasks.withType<JavaCompile>().configureEach {
@@ -157,17 +157,17 @@ afterEvaluate {
         } else {
             options.errorprone.isEnabled = true
             options.errorprone {
-                errorproneArgs.addAll(leanishConventions.errorproneArgs)
+                errorproneArgs.addAll(gradleConventions.errorproneArgs)
             }
         }
     }
 
     tasks.withType<JavaExec>().configureEach {
-        jvmArgs(leanishConventions.javaExecJvmArgs)
+        jvmArgs(gradleConventions.javaExecJvmArgs)
     }
 
     tasks.withType<Test>().configureEach {
-        jvmArgs(leanishConventions.testJvmArgs)
+        jvmArgs(gradleConventions.testJvmArgs)
     }
 
     tasks.withType<JacocoCoverageVerification>().configureEach {
@@ -178,7 +178,7 @@ afterEvaluate {
                 limit {
                     counter = "INSTRUCTION"
                     value = "COVEREDRATIO"
-                    minimum = leanishConventions.minimumCoverage
+                    minimum = gradleConventions.minimumCoverage
                 }
             }
         }
@@ -223,7 +223,7 @@ if (project == rootProject) {
         onlyIf { gitExists.get() && !projectHookFile.asFile.exists() }
 
         doLast {
-            val resource = requireNotNull(LeanishConventionsExtension::class.java.classLoader.getResource("git-hooks/pre-commit")) {
+            val resource = requireNotNull(GradleConventionsExtension::class.java.classLoader.getResource("git-hooks/pre-commit")) {
                 "Missing bundled pre-commit hook resource"
             }
             val targetFile = preCommitHookFile.get().asFile

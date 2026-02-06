@@ -7,7 +7,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
-class LeanishConventionsPluginTest {
+class PluginTest {
     @TempDir
     lateinit var tempDir: Path
 
@@ -73,7 +73,7 @@ class LeanishConventionsPluginTest {
                 id("io.github.leanish.gradle-conventions")
             }
 
-            leanishConventions {
+            gradleConventions {
                 compilerJdkVersion = 21
                 bytecodeJdkVersion = 17
                 runtimeJdkVersion = 21
@@ -176,7 +176,7 @@ class LeanishConventionsPluginTest {
 
     private fun loadBundledPreCommitHook(): String {
         val resource = requireNotNull(
-            LeanishConventionsPluginTest::class.java.classLoader.getResource("git-hooks/pre-commit"),
+            PluginTest::class.java.classLoader.getResource("git-hooks/pre-commit"),
         ) {
             "Missing bundled pre-commit hook resource"
         }

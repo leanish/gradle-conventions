@@ -28,7 +28,7 @@ private val defaultMinimumCoverage = "0.85".toBigDecimal()
  * Values to be mutated to parameterize the plugin.
  * Important: apply these changes during Gradle configuration (e.g., inside build.gradle.kts), changes made later in task actions will not be picked up.
  */
-open class LeanishConventionsExtension @Inject constructor() {
+open class GradleConventionsExtension @Inject constructor() {
     // Extra JVM args for JavaExec tasks (bootRun, etc.).
     val javaExecJvmArgs: MutableList<String> = defaultJavaExecJvmArgs.toMutableList()
 
