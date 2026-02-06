@@ -7,7 +7,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
-class PluginTest {
+class GradleConventionsPluginTest {
     @TempDir
     lateinit var tempDir: Path
 
@@ -73,11 +73,18 @@ class PluginTest {
                 id("io.github.leanish.gradle-conventions")
             }
 
-            gradleConventions {
-                compilerJdkVersion = 21
-                bytecodeJdkVersion = 17
-                runtimeJdkVersion = 21
-                minimumCoverage = "0.91".toBigDecimal()
+            tasks.withType<JavaCompile>().configureEach {
+                options.release.set(17)
+            }
+
+            tasks.withType<JacocoCoverageVerification>().configureEach {
+                violationRules {
+                    rules.forEach { rule ->
+                        rule.limits.forEach { limit ->
+                            limit.minimum = "0.91".toBigDecimal()
+                        }
+                    }
+                }
             }
 
             tasks.register("dumpConventions") {
@@ -175,9 +182,7 @@ class PluginTest {
     }
 
     private fun loadBundledPreCommitHook(): String {
-        val resource = requireNotNull(
-            PluginTest::class.java.classLoader.getResource("git-hooks/pre-commit"),
-        ) {
+        val resource = requireNotNull(PluginResources::class.java.classLoader.getResource("git-hooks/pre-commit")) {
             "Missing bundled pre-commit hook resource"
         }
         return resource.readText()
