@@ -1,12 +1,12 @@
 # AGENTS.md
 
-Scope: this repository (`leanish/gradle-conventions`) only.
+Scope: this repository (`leanish/java-conventions`) only.
 
 This file defines the minimum bar for any change made by agents or humans.
 
 ## Purpose
 
-This repository publishes `io.github.leanish.gradle-conventions`.
+This repository publishes `io.github.leanish.java-conventions`.
 It is a shared build contract. Treat behavior changes as user-facing API changes.
 
 ## Public Contract (must stay documented)
@@ -14,7 +14,7 @@ It is a shared build contract. Treat behavior changes as user-facing API changes
 Any change that affects plugin consumers must be treated as a contract change.
 This includes:
 
-- Plugin id and version usage (`io.github.leanish.gradle-conventions`).
+- Plugin id and version usage (`io.github.leanish.java-conventions`).
 - Applied plugins and task wiring.
 - Defaults for toolchains, repositories, quality tools, and publishing.
 - Added dependencies and their scopes.

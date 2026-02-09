@@ -1,4 +1,4 @@
-# gradle-conventions
+# java-conventions
 
 Shared Gradle conventions for JDK-based projects.
 
@@ -14,6 +14,7 @@ Shared Gradle conventions for JDK-based projects.
 - Adds common compile/test dependencies (Lombok, JSpecify, JetBrains annotations, Error Prone/NullAway).
 - Configures all `Test` tasks to use JUnit Platform and adds `org.junit.platform:junit-platform-launcher:6.0.2` as `testRuntimeOnly`.
 - Adds `maven-publish` conventions by default (`mavenJava` publication + `mavenLocal`/GitHub Packages repositories).
+- Resolves `leanish.conventions.basePackage` from project config or infers it from `src/main/java` package declarations.
 - Adds root-only helper tasks (`installGitHooks`, `setupProject`) and makes `build` depend on `installGitHooks`.
 - Makes `check` depend on every `JacocoCoverageVerification` task.
 
@@ -21,13 +22,14 @@ Shared Gradle conventions for JDK-based projects.
 Publish the plugin to the Gradle Plugin Portal (recommended).
 
 The plugin adds `mavenCentral()` by default to every project where it is applied.
+The canonical plugin id is `io.github.leanish.java-conventions`.
 
 ### Single-project build
 `build.gradle.kts`:
 
 ```kotlin
 plugins {
-    id("io.github.leanish.gradle-conventions") version "0.3.0"
+    id("io.github.leanish.java-conventions") version "0.3.0"
 }
 ```
 
@@ -41,7 +43,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        id("io.github.leanish.gradle-conventions") version "0.3.0"
+        id("io.github.leanish.java-conventions") version "0.3.0"
     }
 }
 ```
@@ -50,7 +52,7 @@ Apply it in each `build.gradle.kts`:
 
 ```kotlin
 plugins {
-    id("io.github.leanish.gradle-conventions")
+    id("io.github.leanish.java-conventions")
 }
 ```
 
@@ -71,13 +73,13 @@ If the plugin version is not published to the Gradle Plugin Portal yet:
        }
    }
    ```
-3. Do not use `pluginManagement { includeBuild("../gradle-conventions") }`; consume by plugin id + version.
+3. Do not use `pluginManagement { includeBuild("../java-conventions") }`; consume by plugin id + version.
 
 If you want root-only tasks (`installGitHooks`, `setupProject`) in a multi-project build, apply the plugin in the root project too:
 
 ```kotlin
 plugins {
-    id("io.github.leanish.gradle-conventions") version "0.3.0"
+    id("io.github.leanish.java-conventions") version "0.3.0"
 }
 ```
 
@@ -92,7 +94,16 @@ leanish.conventions.repositories.mavenCentral.enabled=true
 leanish.conventions.publishing.enabled=true
 leanish.conventions.publishing.githubOwner=leanish
 
+# Project conventions (optional override)
+leanish.conventions.basePackage=io.github.leanish
+
 ```
+
+`leanish.conventions.basePackage` is optional:
+- If configured, the plugin uses that value.
+- If missing, the plugin infers it from `src/main/java` package declarations, stores the inferred
+  value in project extra properties, and logs the inference.
+- The plugin fails fast only when the property is blank or when it cannot infer any Java package.
 
 Publishing repository/name/description conventions are derived from project metadata and are not configurable properties:
 - GitHub repository defaults to `project.name`
@@ -203,24 +214,16 @@ The conventions plugin applies `net.ltgt.errorprone` and adds Error Prone + Null
 It:
 - Adds `-XDaddTypeAnnotationsToSymbol=true`.
 - Configures Error Prone with default arguments (including NullAway).
-- Sets NullAway annotated packages to `io.github.leanish` by default.
+- Sets NullAway annotated packages from resolved `leanish.conventions.basePackage`.
 - Disables Error Prone for `compileTestJava`.
-
-To override the default NullAway package configuration:
-
-```kotlin
-tasks.withType<JavaCompile>().configureEach {
-    options.errorprone {
-        errorproneArgs.removeAll { it.startsWith("-XepOpt:NullAway:AnnotatedPackages=") }
-        errorproneArgs.add("-XepOpt:NullAway:AnnotatedPackages=com.example")
-    }
-}
-```
 
 ## Notes
 - Checkstyle uses the configuration bundled in this plugin. If `config/checkstyle/suppressions.xml` exists, it is applied; otherwise no suppressions are used.
 - The plugin does not add a toolchain resolver; ensure the configured JDK is available locally or add a resolver in the consuming project.
 - The plugin adds `mavenCentral()` by default; disable it with `leanish.conventions.repositories.mavenCentral.enabled=false`.
 - Publishing conventions use GitHub owner `leanish` by default; change with `leanish.conventions.publishing.githubOwner`.
+- Base package can be configured via `leanish.conventions.basePackage`; if omitted, it is inferred
+  from `src/main/java` package declarations and logged.
+- NullAway annotated packages are derived from `leanish.conventions.basePackage`.
 - Dependencies added by the plugin are additive; your project dependencies remain in effect.
 - The bundled pre-commit hook runs `./gradlew spotlessApply` and `./gradlew checkstyleMain checkstyleTest`, and may modify files before commit.

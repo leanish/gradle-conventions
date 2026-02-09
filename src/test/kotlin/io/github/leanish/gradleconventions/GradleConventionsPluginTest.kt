@@ -15,6 +15,7 @@ class GradleConventionsPluginTest {
     fun defaultsAreApplied() {
         val projectDir = tempDir.resolve("defaults").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-defaults\"")
         writeFile(
@@ -25,7 +26,7 @@ class GradleConventionsPluginTest {
             import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
 
             tasks.register("dumpConventions") {
@@ -60,6 +61,7 @@ class GradleConventionsPluginTest {
     fun overridesAreApplied() {
         val projectDir = tempDir.resolve("overrides").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-overrides\"")
         writeFile(
@@ -70,7 +72,7 @@ class GradleConventionsPluginTest {
             import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
 
             tasks.withType<JavaCompile>().configureEach {
@@ -119,6 +121,7 @@ class GradleConventionsPluginTest {
     fun addsLauncherDependencyAndMavenCentralRepository() {
         val projectDir = tempDir.resolve("dependency-behavior").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-dependency-behavior\"")
         writeFile(
@@ -130,7 +133,7 @@ class GradleConventionsPluginTest {
             import org.gradle.api.tasks.compile.JavaCompile
 
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
 
             tasks.register("dumpConventions") {
@@ -177,6 +180,7 @@ class GradleConventionsPluginTest {
     fun canDisableMavenCentralWithProperty() {
         val projectDir = tempDir.resolve("repository-toggle").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-repository-toggle\"")
         writeFile(
@@ -186,7 +190,7 @@ class GradleConventionsPluginTest {
             import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
 
             tasks.register("dumpConventions") {
@@ -217,9 +221,180 @@ class GradleConventionsPluginTest {
     }
 
     @Test
+    fun canOverrideBasePackageWithProperty() {
+        val projectDir = tempDir.resolve("base-package-override").toFile()
+        projectDir.mkdirs()
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"base-package-override\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            import net.ltgt.gradle.errorprone.errorprone
+            import org.gradle.api.tasks.compile.JavaCompile
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            tasks.register("dumpConventions") {
+                doLast {
+                    val compileJava = project.tasks.findByName("compileJava") as JavaCompile?
+                    val annotatedPackagesArg = compileJava?.options?.errorprone?.errorproneArgs?.get()?.firstOrNull {
+                        it.startsWith("-XepOpt:NullAway:AnnotatedPackages=")
+                    }
+                    println("annotatedPackagesArg=${'$'}annotatedPackagesArg")
+                }
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "-Pleanish.conventions.basePackage=com.example",
+                "dumpConventions",
+            )
+            .withPluginClasspath()
+            .build()
+
+        assertThat(result.output)
+            .contains("annotatedPackagesArg=-XepOpt:NullAway:AnnotatedPackages=com.example")
+    }
+
+    @Test
+    fun infersBasePackageFromSourcePackagesWhenPropertyIsMissing() {
+        val projectDir = tempDir.resolve("base-package-inferred").toFile()
+        projectDir.mkdirs()
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"base-package-inferred\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            import net.ltgt.gradle.errorprone.errorprone
+            import org.gradle.api.tasks.compile.JavaCompile
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            tasks.register("dumpConventions") {
+                doLast {
+                    val compileJava = project.tasks.findByName("compileJava") as JavaCompile?
+                    val annotatedPackagesArg = compileJava?.options?.errorprone?.errorproneArgs?.get()?.firstOrNull {
+                        it.startsWith("-XepOpt:NullAway:AnnotatedPackages=")
+                    }
+                    val inferredBasePackage = if (project.extensions.extraProperties.has("leanish.conventions.basePackage")) {
+                        project.extensions.extraProperties["leanish.conventions.basePackage"]
+                    } else {
+                        null
+                    }
+                    println("annotatedPackagesArg=${'$'}annotatedPackagesArg")
+                    println("inferredBasePackage=${'$'}inferredBasePackage")
+                }
+            }
+            """.trimIndent(),
+        )
+        writeFile(
+            projectDir,
+            "src/main/java/com/example/app/Sample.java",
+            """
+            package com.example.app;
+
+            public class Sample {
+                public String value() {
+                    return "ok";
+                }
+            }
+            """.trimIndent(),
+        )
+        writeFile(
+            projectDir,
+            "src/main/java/com/example/app/internal/Nested.java",
+            """
+            package com.example.app.internal;
+
+            public class Nested {}
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("dumpConventions")
+            .withPluginClasspath()
+            .build()
+
+        assertThat(result.output)
+            .contains("Inferred 'leanish.conventions.basePackage=com.example.app' from source packages under src/main/java")
+            .contains("annotatedPackagesArg=-XepOpt:NullAway:AnnotatedPackages=com.example.app")
+            .contains("inferredBasePackage=com.example.app")
+    }
+
+    @Test
+    fun failsWhenBasePackagePropertyIsBlank() {
+        val projectDir = tempDir.resolve("base-package-blank").toFile()
+        projectDir.mkdirs()
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"base-package-blank\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "-Pleanish.conventions.basePackage=",
+                "tasks",
+                "--all",
+            )
+            .withPluginClasspath()
+            .buildAndFail()
+
+        assertThat(result.output)
+            .contains("Property 'leanish.conventions.basePackage' must not be blank")
+    }
+
+    @Test
+    fun failsWhenBasePackagePropertyIsMissing() {
+        val projectDir = tempDir.resolve("base-package-missing").toFile()
+        projectDir.mkdirs()
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"base-package-missing\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "tasks",
+                "--all",
+            )
+            .withPluginClasspath()
+            .buildAndFail()
+
+        assertThat(result.output)
+            .contains("Property 'leanish.conventions.basePackage' must be configured")
+    }
+
+    @Test
     fun appliesPublishingConventionsByDefault() {
         val projectDir = tempDir.resolve("publishing-conventions").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"publishing-sample\"")
         writeFile(
@@ -227,7 +402,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
 
             group = "io.github.leanish"
@@ -275,6 +450,7 @@ class GradleConventionsPluginTest {
     fun canDisablePublishingConventionsWithProperty() {
         val projectDir = tempDir.resolve("publishing-conventions-disabled").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"publishing-disabled\"")
         writeFile(
@@ -282,7 +458,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
             """.trimIndent(),
         )
@@ -306,6 +482,7 @@ class GradleConventionsPluginTest {
     fun appliesLicenseHeaderWhenLicenseHeaderFileExists() {
         val projectDir = tempDir.resolve("license-header").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"license-header\"")
         writeFile(
@@ -313,7 +490,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
             """.trimIndent(),
         )
@@ -358,6 +535,7 @@ class GradleConventionsPluginTest {
     fun skipsLicenseHeaderWhenLicenseHeaderFileIsMissing() {
         val projectDir = tempDir.resolve("license-header-disabled").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"license-header-disabled\"")
         writeFile(
@@ -365,7 +543,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
             """.trimIndent(),
         )
@@ -400,6 +578,7 @@ class GradleConventionsPluginTest {
     fun customPreCommitHookIsUsedWhenPresent() {
         val projectDir = tempDir.resolve("hooks").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-hooks\"")
         writeFile(
@@ -407,7 +586,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
             """.trimIndent(),
         )
@@ -432,6 +611,7 @@ class GradleConventionsPluginTest {
     fun bundledPreCommitHookIsUsedWhenNoCustomHookIsPresent() {
         val projectDir = tempDir.resolve("bundled-hooks").toFile()
         projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
 
         writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-bundled-hooks\"")
         writeFile(
@@ -439,7 +619,7 @@ class GradleConventionsPluginTest {
             "build.gradle.kts",
             """
             plugins {
-                id("io.github.leanish.gradle-conventions")
+                id("io.github.leanish.java-conventions")
             }
             """.trimIndent(),
         )
@@ -462,6 +642,14 @@ class GradleConventionsPluginTest {
         val file = projectDir.resolve(name)
         file.parentFile?.mkdirs()
         file.writeText(content)
+    }
+
+    private fun writeRequiredConventionsProperties(projectDir: File) {
+        writeFile(
+            projectDir,
+            "gradle.properties",
+            "leanish.conventions.basePackage=io.github.leanish",
+        )
     }
 
     private fun loadBundledPreCommitHook(): String {

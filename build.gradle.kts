@@ -38,29 +38,29 @@ tasks.test {
 }
 
 gradlePlugin {
-    website.set("https://github.com/leanish/gradle-conventions")
-    vcsUrl.set("https://github.com/leanish/gradle-conventions")
+    website.set("https://github.com/leanish/java-conventions")
+    vcsUrl.set("https://github.com/leanish/java-conventions")
     plugins {
-        named("io.github.leanish.gradle-conventions") {
-            displayName = "Leanish Gradle Conventions"
-            description = "Shared Gradle conventions for JDK-based projects."
-            tags.set(
-                listOf(
-                    "conventions",
-                    "java",
-                    "checkstyle",
-                    "spotless",
-                    "junit",
-                    "coverage",
-                    "jacoco",
-                    "errorprone",
-                    "nullaway",
-                    "license",
-                    "git-hooks",
-                    "publishing",
-                    "maven-publish",
-                ),
-            )
+        val pluginTags = listOf(
+            "conventions",
+            "java",
+            "checkstyle",
+            "spotless",
+            "junit",
+            "coverage",
+            "jacoco",
+            "errorprone",
+            "nullaway",
+            "license",
+            "git-hooks",
+            "publishing",
+            "maven-publish",
+        )
+
+        named("io.github.leanish.java-conventions") {
+            displayName = "Leanish Java Conventions"
+            description = "Shared Gradle conventions for Java projects."
+            tags.set(pluginTags)
         }
     }
 }

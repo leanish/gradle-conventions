@@ -40,6 +40,38 @@ fun requireBooleanProperty(name: String, defaultValue: Boolean): Provider<Boolea
     }
 }
 
+fun detectBasePackagesFromMainJavaSources(projectDir: File): List<String> {
+    val sourceRoot = projectDir.resolve("src/main/java")
+    if (!sourceRoot.exists() || !sourceRoot.isDirectory) {
+        return emptyList()
+    }
+
+    val packageRegex = Regex("""^\s*package\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*;""")
+    val detectedPackages = linkedSetOf<String>()
+
+    sourceRoot.walkTopDown()
+        .filter { file -> file.isFile && file.extension == "java" }
+        .forEach { sourceFile ->
+            sourceFile.useLines { lines ->
+                val packageName = lines.firstNotNullOfOrNull { line ->
+                    packageRegex.find(line)?.groupValues?.get(1)
+                }
+                if (packageName != null) {
+                    detectedPackages.add(packageName)
+                }
+            }
+        }
+
+    val sortedPackages = detectedPackages.sorted()
+    val rootPackages = mutableListOf<String>()
+    sortedPackages.forEach { packageName ->
+        if (rootPackages.none { parent -> packageName == parent || packageName.startsWith("$parent.") }) {
+            rootPackages.add(packageName)
+        }
+    }
+    return rootPackages
+}
+
 val mavenCentralEnabled: Provider<Boolean> = requireBooleanProperty(
     name = "leanish.conventions.repositories.mavenCentral.enabled",
     defaultValue = true,
@@ -56,6 +88,32 @@ val publishingPomDescription: Provider<String> =
     providers.provider {
         project.description?.takeIf(String::isNotBlank) ?: project.name
     }
+val basePackagePropertyName = "leanish.conventions.basePackage"
+val nullAwayAnnotatedPackages: Provider<String> = providers.provider {
+    val configuredBasePackage = findProperty(basePackagePropertyName)?.toString()?.trim()
+    if (configuredBasePackage != null) {
+        if (configuredBasePackage.isEmpty()) {
+            throw GradleException("Property '$basePackagePropertyName' must not be blank")
+        }
+        return@provider configuredBasePackage
+    }
+
+    val detectedBasePackages = detectBasePackagesFromMainJavaSources(layout.projectDirectory.asFile)
+    if (detectedBasePackages.isEmpty()) {
+        throw GradleException(
+            "Property '$basePackagePropertyName' must be configured or at least one Java package declaration must be discoverable under src/main/java",
+        )
+    }
+
+    val inferredBasePackages = detectedBasePackages.joinToString(",")
+    if (!extensions.extraProperties.has(basePackagePropertyName)) {
+        extensions.extraProperties.set(basePackagePropertyName, inferredBasePackages)
+        logger.lifecycle(
+            "Inferred '$basePackagePropertyName=$inferredBasePackages' from source packages under src/main/java",
+        )
+    }
+    inferredBasePackages
+}
 val publishingDeveloperId: Provider<String> = providers.provider { "leanish" }
 val publishingDeveloperName: Provider<String> = providers.provider { "Leandro Aguiar" }
 val publishingDeveloperUrl: Provider<String> = providers.provider { "https://github.com/leanish" }
@@ -282,7 +340,7 @@ tasks.withType<JavaCompile>().configureEach {
         errorproneArgs.addAll(
             listOf(
                 "-Xep:NullAway:ERROR",
-                "-XepOpt:NullAway:AnnotatedPackages=io.github.leanish",
+                "-XepOpt:NullAway:AnnotatedPackages=${nullAwayAnnotatedPackages.get()}",
             ),
         )
     }
