@@ -21,7 +21,7 @@ Shared Gradle conventions for JDK-based projects.
 
 ## How to use
 Use the Gradle Plugin Portal for released versions.
-For local development, publish this plugin to `mavenLocal()` and use the snapshot version.
+For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your snapshot version (for example, `0.3.1-SNAPSHOT`).
 
 The plugin adds `mavenCentral()` by default to every project where it is applied.
 The canonical plugin id is `io.github.leanish.java-conventions`.
@@ -31,11 +31,9 @@ The canonical plugin id is `io.github.leanish.java-conventions`.
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.3.0-SNAPSHOT"
+    id("io.github.leanish.java-conventions") version "0.3.0"
 }
 ```
-
-Use the latest released version instead of `0.3.0-SNAPSHOT` once it is published.
 
 ### Multi-project build
 `settings.gradle.kts`:
@@ -43,12 +41,11 @@ Use the latest released version instead of `0.3.0-SNAPSHOT` once it is published
 ```kotlin
 pluginManagement {
     repositories {
-        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
     }
     plugins {
-        id("io.github.leanish.java-conventions") version "0.3.0-SNAPSHOT"
+        id("io.github.leanish.java-conventions") version "0.3.0"
     }
 }
 ```
@@ -68,7 +65,7 @@ If the plugin version is not published to the Gradle Plugin Portal yet:
    ```bash
    ./gradlew publishToMavenLocal
    ```
-2. Ensure consumer `settings.gradle(.kts)` has `mavenLocal()` in `pluginManagement.repositories` (before remote repositories), for example:
+2. Ensure consumer `settings.gradle(.kts)` has `mavenLocal()` in `pluginManagement.repositories` (before remote repositories) while testing unreleased snapshots, for example:
    ```kotlin
    pluginManagement {
        repositories {
@@ -79,12 +76,13 @@ If the plugin version is not published to the Gradle Plugin Portal yet:
    }
    ```
 3. Do not use `pluginManagement { includeBuild("../java-conventions") }`; consume by plugin id + version.
+4. When you switch back to a released version, remove `mavenLocal()` (or move it after remote repositories) to avoid resolving stale local artifacts.
 
 If you want root-only tasks (`installGitHooks`, `setupProject`) in a multi-project build, apply the plugin in the root project too:
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.3.0-SNAPSHOT"
+    id("io.github.leanish.java-conventions") version "0.3.0"
 }
 ```
 
