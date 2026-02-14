@@ -120,3 +120,20 @@ gradlePlugin {
         }
     }
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/leanish/java-conventions")
+            credentials {
+                username = providers.environmentVariable("GITHUB_ACTOR")
+                    .orElse(providers.gradleProperty("gpr.user"))
+                    .orNull
+                password = providers.environmentVariable("GITHUB_TOKEN")
+                    .orElse(providers.gradleProperty("gpr.key"))
+                    .orNull
+            }
+        }
+    }
+}

@@ -139,6 +139,10 @@ Publishing owner/developer metadata is optional:
   or use `GRADLE_PUBLISH_KEY` and `GRADLE_PUBLISH_SECRET`.
 - Publish with `./gradlew publishPlugins`.
 - For local testing, use `./gradlew publishToMavenLocal`.
+- For GitHub Packages publishing of this plugin project:
+  - repository is `https://maven.pkg.github.com/leanish/java-conventions`
+  - credentials resolve by environment first (`GITHUB_ACTOR`, `GITHUB_TOKEN`), then properties (`gpr.user`, `gpr.key`)
+  - publish with `./gradlew publishAllPublicationsToGitHubPackagesRepository`.
 
 ## Override patterns
 ### Override existing values
