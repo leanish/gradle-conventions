@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+### Changed
+- Upgraded consumer-injected test dependencies:
+  - `org.junit.jupiter:junit-jupiter` from `6.0.2` to `6.0.3`
+  - `org.junit.platform:junit-platform-launcher` from `6.0.2` to `6.0.3`
+
 ## 0.3.0
 
 ### Breaking changes
@@ -31,7 +38,7 @@
 - Test dependency conventions:
   - adds `org.junit.jupiter:junit-jupiter:6.0.2`
   - adds `org.assertj:assertj-core:3.27.7`
-  - keeps JUnit Platform launcher as `testRuntimeOnly`
+  - keeps JUnit Platform launcher (`org.junit.platform:junit-platform-launcher:6.0.2`) as `testRuntimeOnly`
 - Plugin self-publishing support to GitHub Packages (`leanish/java-conventions`).
 
 ### Changed

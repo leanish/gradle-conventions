@@ -219,8 +219,6 @@ tasks.named("javadocJar") {
 - If you also want to omit these artifacts from publications, skip the `sourcesElements` and `javadocElements` variants:
 
 ```kotlin
-import org.gradle.api.component.AdhocComponentWithVariants
-
 components.named<AdhocComponentWithVariants>("java") {
     withVariantsFromConfiguration(configurations["sourcesElements"]) { skip() }
     withVariantsFromConfiguration(configurations["javadocElements"]) { skip() }
@@ -234,8 +232,8 @@ components.named<AdhocComponentWithVariants>("java") {
 
 ## JUnit Platform
 - All `Test` tasks call `useJUnitPlatform()`.
-- The plugin adds `org.junit.jupiter:junit-jupiter:6.0.2` and `org.assertj:assertj-core:3.27.7` as `testImplementation`.
-- The plugin adds `org.junit.platform:junit-platform-launcher:6.0.2` as `testRuntimeOnly`.
+- The plugin adds `org.junit.jupiter:junit-jupiter:6.0.3` and `org.assertj:assertj-core:3.27.7` as `testImplementation`.
+- The plugin adds `org.junit.platform:junit-platform-launcher:6.0.3` as `testRuntimeOnly`.
 - If you need different test execution behavior for specific tasks, override those tasks in your build script.
 
 ## Maven Publish conventions
