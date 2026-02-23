@@ -19,13 +19,14 @@ repositories {
 
 java {
     toolchain {
-        // Build/test the plugin on Java 25 to mirror the conventions' default toolchain.
+        // No Java sources today, but pinning Java toolchain tasks (especially tests) to 25 to mirror the conventions' default toolchain.
         languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
 kotlin {
-    // Gradle embeds Kotlin 2.2.x today; pinning it to JDK 21 until Gradle uses Kotlin 2.3+.
+    // Gradle embeds Kotlin 2.2.x today; kotlin-dsl compilation stays on JDK 21 until Gradle moves to Kotlin 2.3+.
+    // At that point we should align this to 25 and simplify CI back to a single JDK.
     jvmToolchain(21)
 }
 
