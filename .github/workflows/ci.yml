@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v6
 
       # Kotlin DSL compilation uses JDK 21 today (Gradle embeds Kotlin 2.2.x)
-      - name: Set up JDK 21
+      - name: Set up JDK 21 (Kotlin DSL toolchain)
         uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -24,7 +24,7 @@ jobs:
 
       # Tests/Java toolchain tasks use JDK 25
       # JDK declaration order matters as the last one declared will be the default one (thus used to run Gradle itself)
-      - name: Set up JDK 25
+      - name: Set up JDK 25 (Gradle runtime + Java toolchain/tests)
         uses: actions/setup-java@v5
         with:
           distribution: temurin
