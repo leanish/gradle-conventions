@@ -1,10 +1,6 @@
 package io.github.leanish.gradleconventions
 
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_ID_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_NAME_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_URL_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.GITHUB_REPOSITORY_OWNER_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER_ENV
 import java.nio.file.Path
 import java.util.jar.JarFile
 import org.assertj.core.api.Assertions.assertThat
@@ -442,11 +438,11 @@ class GradleConventionsPluginTest {
                 "-Pleanish.conventions.repositories.mavenCentral.enabled=true",
                 "dumpConventions",
             )
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "JAVA_CONVENTIONS_MAVEN_CENTRAL_ENABLED" to "false",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -529,11 +525,9 @@ class GradleConventionsPluginTest {
                 "-Pleanish.conventions.repositories.mavenLocal.enabled=false",
                 "dumpConventions",
             )
-            .withEnvironment(
-                mapOf(
-                    "JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED" to "true",
-                ),
-            )
+            .withEnvironment(environmentWithoutConventionsOverrides(
+                mapOf("JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED" to "true"),
+            ))
             .withPluginClasspath()
             .build()
 
@@ -620,11 +614,11 @@ class GradleConventionsPluginTest {
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments("dumpConventions")
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "JAVA_CONVENTIONS_BASE_PACKAGE" to "com.env.base",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -796,7 +790,7 @@ class GradleConventionsPluginTest {
                 "tasks",
                 "--all",
             )
-            .withEnvironment(environmentWithoutGithubRepositoryOwner())
+            .withEnvironment(environmentWithoutConventionsOverrides())
             .withPluginClasspath()
             .build()
 
@@ -809,7 +803,7 @@ class GradleConventionsPluginTest {
             .withArguments(
                 "generatePomFileForMavenJavaPublication",
             )
-            .withEnvironment(environmentWithoutGithubRepositoryOwner())
+            .withEnvironment(environmentWithoutConventionsOverrides())
             .withPluginClasspath()
             .build()
 
@@ -857,7 +851,9 @@ class GradleConventionsPluginTest {
         GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments("generatePomFileForMavenJavaPublication")
-            .withEnvironment(mapOf("GITHUB_REPOSITORY_OWNER" to "env-owner"))
+            .withEnvironment(environmentWithoutConventionsOverrides(
+                mapOf("GITHUB_REPOSITORY_OWNER" to "env-owner"),
+            ))
             .withPluginClasspath()
             .build()
 
@@ -903,11 +899,11 @@ class GradleConventionsPluginTest {
         GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments("generatePomFileForMavenJavaPublication")
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "JAVA_CONVENTIONS_PUBLISHING_GITHUB_OWNER" to "env-owner",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -952,13 +948,13 @@ class GradleConventionsPluginTest {
         GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments("generatePomFileForMavenJavaPublication")
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_ID" to "env-id",
                     "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_NAME" to "Env Name",
                     "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_URL" to "https://example.com/env",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -1005,7 +1001,7 @@ class GradleConventionsPluginTest {
             .withArguments(
                 "generatePomFileForMavenJavaPublication",
             )
-            .withEnvironment(environmentWithoutPublishingOverrides())
+            .withEnvironment(environmentWithoutConventionsOverrides())
             .withPluginClasspath()
             .build()
 
@@ -1046,9 +1042,9 @@ class GradleConventionsPluginTest {
             """.trimIndent(),
         )
 
-        val environment = environmentWithoutPublishingOverrides().toMutableMap().apply {
-            put(PUBLISHING_DEVELOPER_NAME_ENV, "Env Name")
-        }
+        val environment = environmentWithoutConventionsOverrides(
+            mapOf(PUBLISHING_DEVELOPER_NAME_ENV to "Env Name"),
+        )
 
         GradleRunner.create()
             .withProjectDir(projectDir)
@@ -1108,12 +1104,12 @@ class GradleConventionsPluginTest {
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments("dumpGithubPackagesCredentials")
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "GITHUB_ACTOR" to "env-user",
                     "GITHUB_TOKEN" to "env-token",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -1180,11 +1176,11 @@ class GradleConventionsPluginTest {
                 "tasks",
                 "--all",
             )
-            .withEnvironment(
+            .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
                     "JAVA_CONVENTIONS_PUBLISHING_ENABLED" to "false",
                 ),
-            )
+            ))
             .withPluginClasspath()
             .build()
 
@@ -1194,7 +1190,7 @@ class GradleConventionsPluginTest {
     }
 
     @Test
-    fun canDisableGithubPackagesPublishingWithPropertyWhileKeepingMavenLocalPublishing() {
+    fun canDisableGithubPackagesPublishingWithPropertyWhileKeepingMavenPublishEnabled() {
         val projectDir = tempDir.resolve("publishing-github-packages-disabled").toFile()
         projectDir.mkdirs()
         writeRequiredConventionsProperties(projectDir)
@@ -1223,6 +1219,49 @@ class GradleConventionsPluginTest {
         assertThat(tasksResult.output)
             .contains("publishMavenJavaPublicationToMavenLocal")
             .doesNotContain("publishMavenJavaPublicationToGitHubPackagesRepository")
+    }
+
+    @Test
+    fun failsFastWhenGithubPackagesRepositoryIsNotMaven() {
+        val projectDir = tempDir.resolve("publishing-github-packages-non-maven").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"publishing-github-packages-non-maven\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            $$"""
+            plugins {
+                id("io.github.leanish.java-conventions") apply false
+                id("maven-publish")
+            }
+
+            group = "io.github.acme"
+            version = "1.0.0"
+
+            publishing {
+                repositories {
+                    ivy {
+                        name = "GitHubPackages"
+                        url = uri(layout.buildDirectory.dir("fake-ivy-repo"))
+                    }
+                }
+            }
+
+            apply(plugin = "io.github.leanish.java-conventions")
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("tasks", "--all")
+            .withEnvironment(environmentWithoutConventionsOverrides())
+            .withPluginClasspath()
+            .buildAndFail()
+
+        assertThat(result.output)
+            .contains("Repository 'GitHubPackages' exists but is not a MavenArtifactRepository")
     }
 
     @Test
@@ -1517,19 +1556,4 @@ class GradleConventionsPluginTest {
         return resource.readText()
     }
 
-    private fun environmentWithoutGithubRepositoryOwner(): Map<String, String> {
-        return System.getenv().toMutableMap().apply {
-            remove(GITHUB_REPOSITORY_OWNER_ENV)
-        }
-    }
-
-    private fun environmentWithoutPublishingOverrides(): Map<String, String> {
-        return System.getenv().toMutableMap().apply {
-            remove(GITHUB_REPOSITORY_OWNER_ENV)
-            remove(PUBLISHING_GITHUB_OWNER_ENV)
-            remove(PUBLISHING_DEVELOPER_ID_ENV)
-            remove(PUBLISHING_DEVELOPER_NAME_ENV)
-            remove(PUBLISHING_DEVELOPER_URL_ENV)
-        }
-    }
 }

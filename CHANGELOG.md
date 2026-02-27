@@ -13,7 +13,7 @@
 
 ### Changed
 - Publishing conventions no longer auto-add `mavenLocal()` as a publishing repository.
-- `maven-publish` conventions remain enabled by `leanish.conventions.publishing.enabled`, while GitHub Packages publishing can be disabled independently.
+- GitHub Packages publishing is now independently toggled from overall publishing conventions.
 
 ## 0.3.1
 
