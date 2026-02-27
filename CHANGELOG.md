@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+- Fine-grained publishing toggle for GitHub Packages:
+  - `leanish.conventions.publishing.githubPackages.enabled`
+  - `JAVA_CONVENTIONS_PUBLISHING_GITHUB_PACKAGES_ENABLED`
+- Explicit fail-fast validation when a repository named `GitHubPackages` already exists but is not a Maven repository.
+
+### Changed
+- `maven-publish` conventions remain enabled by `leanish.conventions.publishing.enabled`, while GitHub Packages publishing can be disabled independently.
+
 ## 0.3.1
 
 ### Changed

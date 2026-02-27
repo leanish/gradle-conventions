@@ -37,6 +37,7 @@ class JavaConventionsProvidersTest {
 
         assertThat(providers.mavenCentralEnabled.get()).isTrue()
         assertThat(providers.publishingConventionsEnabled.get()).isTrue()
+        assertThat(providers.publishingGithubPackagesEnabled.get()).isTrue()
         assertThat(providers.publishingGithubOwner.get()).isEqualTo(githubOwnerFromEnvironment ?: "acme")
         assertThat(providers.publishingGithubRepository.get()).isEqualTo("defaults")
         assertThat(providers.publishingPomName.get()).isEqualTo("defaults")
@@ -86,6 +87,17 @@ class JavaConventionsProvidersTest {
         val providers = project.javaConventionsProviders()
 
         assertThat(providers.publishingGithubOwner.get()).isEqualTo(resolvedGithubOwnerFromEnvironment() ?: "")
+    }
+
+    @Test
+    fun publishingGithubPackagesEnabledCanBeDisabledWithProperty() {
+        val project = newJavaProject(tempDir.resolve("github-packages-disabled").toFile(), "github-packages-disabled")
+        project.extensions.extraProperties.set("leanish.conventions.publishing.githubPackages.enabled", "false")
+
+        val providers = project.javaConventionsProviders()
+
+        assertThat(providers.publishingGithubPackagesEnabled.get()).isFalse()
+        assertThat(providers.publishingConventionsEnabled.get()).isTrue()
     }
 
     private fun resolvedGithubOwnerFromEnvironment(): String? {

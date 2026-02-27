@@ -44,6 +44,7 @@ val excludedTags: List<String> = providers.systemProperty("excludeTags")
 private val conventionProviders = javaConventionsProviders()
 val mavenCentralEnabled = conventionProviders.mavenCentralEnabled
 val publishingConventionsEnabled = conventionProviders.publishingConventionsEnabled
+val publishingGithubPackagesEnabled = conventionProviders.publishingGithubPackagesEnabled
 val publishingGithubOwner = conventionProviders.publishingGithubOwner
 val publishingGithubRepository = conventionProviders.publishingGithubRepository
 val publishingPomName = conventionProviders.publishingPomName
@@ -199,25 +200,30 @@ plugins.withId("maven-publish") {
         }
 
         repositories {
-            if (findByName("mavenLocal") == null) {
-                mavenLocal()
-            }
-
             val existingGithubPackages = findByName("GitHubPackages")
-            if (resolvedGithubOwner != null && existingGithubPackages !is MavenArtifactRepository) {
-                maven {
-                    name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/$resolvedGithubOwner/${publishingGithubRepository.get()}")
-                    credentials {
-                        username = stringProperty(
-                            GITHUB_PACKAGES_USER,
-                            GITHUB_ACTOR_ENV,
-                        )
-                        password = stringProperty(
-                            GITHUB_PACKAGES_KEY,
-                            GITHUB_TOKEN_ENV,
-                        )
+            if (publishingGithubPackagesEnabled.get() && resolvedGithubOwner != null) {
+                when (existingGithubPackages) {
+                    is MavenArtifactRepository -> {
+                        // Consumer already configured a Maven GitHubPackages repository; keeping it.
                     }
+                    null -> maven {
+                        name = "GitHubPackages"
+                        url = uri("https://maven.pkg.github.com/$resolvedGithubOwner/${publishingGithubRepository.get()}")
+                        credentials {
+                            username = stringProperty(
+                                GITHUB_PACKAGES_USER,
+                                GITHUB_ACTOR_ENV,
+                            )
+                            password = stringProperty(
+                                GITHUB_PACKAGES_KEY,
+                                GITHUB_TOKEN_ENV,
+                            )
+                        }
+                    }
+                    else -> throw GradleException(
+                        "Repository 'GitHubPackages' exists but is not a MavenArtifactRepository " +
+                            "(${existingGithubPackages::class.java.name})",
+                    )
                 }
             }
         }

@@ -21,7 +21,7 @@ Shared Gradle conventions for JDK-based projects.
 
 ## How to use
 Use the Gradle Plugin Portal for released versions.
-For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your snapshot version (for example, `0.3.1-SNAPSHOT`).
+For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your target version (for example, `0.4.0`).
 
 The plugin adds `mavenCentral()` by default to every project where it is applied.
 The canonical plugin id is `io.github.leanish.java-conventions`.
@@ -31,7 +31,7 @@ The canonical plugin id is `io.github.leanish.java-conventions`.
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.3.0"
+    id("io.github.leanish.java-conventions") version "0.4.0"
 }
 ```
 
@@ -45,7 +45,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        id("io.github.leanish.java-conventions") version "0.3.0"
+        id("io.github.leanish.java-conventions") version "0.4.0"
     }
 }
 ```
@@ -82,7 +82,7 @@ If you want root-only tasks (`installGitHooks`, `setupProject`) in a multi-proje
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.3.0"
+    id("io.github.leanish.java-conventions") version "0.4.0"
 }
 ```
 
@@ -95,6 +95,7 @@ leanish.conventions.repositories.mavenCentral.enabled=true
 
 # Publishing conventions
 leanish.conventions.publishing.enabled=true
+leanish.conventions.publishing.githubPackages.enabled=true
 leanish.conventions.publishing.githubOwner=acme
 leanish.conventions.publishing.developer.id=acme
 leanish.conventions.publishing.developer.name=Acme Team
@@ -247,8 +248,9 @@ When enabled, the plugin:
   - repository and SCM use `https://github.com/<githubOwner>/<project.name>` when owner is resolvable
   - POM `name` uses `project.name`
   - POM `description` uses `project.description` (or falls back to `project.name`)
-- Adds `mavenLocal()` always.
-- Adds GitHub Packages (`GitHubPackages`) publishing repository only when owner is resolvable.
+- Adds GitHub Packages (`GitHubPackages`) publishing repository only when:
+  - `leanish.conventions.publishing.githubPackages.enabled=true` (default), and
+  - owner is resolvable.
 
 ### Overriding publishing
 Two supported patterns:
