@@ -9,6 +9,7 @@
 - Fine-grained publishing toggle for GitHub Packages:
   - `leanish.conventions.publishing.githubPackages.enabled`
   - `JAVA_CONVENTIONS_PUBLISHING_GITHUB_PACKAGES_ENABLED`
+- Exposed `io.github.leanish.gradleconventions.ConventionProperties` for wrapper plugins so shared property/env names can be imported instead of duplicated.
 - Explicit fail-fast validation when a repository named `GitHubPackages` already exists but is not a Maven repository.
 
 ### Changed
