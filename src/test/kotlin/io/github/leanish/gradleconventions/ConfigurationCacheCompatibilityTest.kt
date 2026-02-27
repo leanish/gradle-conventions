@@ -1,11 +1,5 @@
 package io.github.leanish.gradleconventions
 
-import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.GITHUB_REPOSITORY_OWNER_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER_ENV
 import java.io.File
 import java.nio.file.Path
 import org.assertj.core.api.Assertions.assertThat
@@ -164,21 +158,9 @@ class ConfigurationCacheCompatibilityTest {
         return GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments(arguments)
-            .withEnvironment(testEnvironment(environmentOverrides))
+            .withEnvironment(environmentWithoutConventionsOverrides(environmentOverrides))
             .withPluginClasspath()
             .build()
-    }
-
-    private fun testEnvironment(environmentOverrides: Map<String, String>): Map<String, String> {
-        return System.getenv().toMutableMap().apply {
-            remove(MAVEN_LOCAL_ENABLED_ENV)
-            remove(MAVEN_CENTRAL_ENABLED_ENV)
-            remove(PUBLISHING_ENABLED_ENV)
-            remove(PUBLISHING_GITHUB_OWNER_ENV)
-            remove(GITHUB_REPOSITORY_OWNER_ENV)
-            remove(BASE_PACKAGE_ENV)
-            putAll(environmentOverrides)
-        }
     }
 
     private fun writeDumpRepositoriesBuild(projectDir: File) {

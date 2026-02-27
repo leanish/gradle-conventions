@@ -2,6 +2,14 @@ package io.github.leanish.gradleconventions
 
 import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE
 import io.github.leanish.gradleconventions.ConventionProperties.GITHUB_REPOSITORY_OWNER_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV
 import java.io.File
 import java.nio.file.Path
 import org.assertj.core.api.Assertions.assertThat
@@ -33,12 +41,32 @@ class JavaConventionsProvidersTest {
         project.group = "io.github.acme.lib"
 
         val providers = project.javaConventionsProviders()
+        val mavenLocalEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = MAVEN_LOCAL_ENABLED,
+            envName = MAVEN_LOCAL_ENABLED_ENV,
+            defaultValue = false,
+        )
+        val mavenCentralEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = MAVEN_CENTRAL_ENABLED,
+            envName = MAVEN_CENTRAL_ENABLED_ENV,
+            defaultValue = true,
+        )
+        val publishingConventionsEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = PUBLISHING_ENABLED,
+            envName = PUBLISHING_ENABLED_ENV,
+            defaultValue = true,
+        )
+        val publishingGithubPackagesEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = PUBLISHING_GITHUB_PACKAGES_ENABLED,
+            envName = PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV,
+            defaultValue = true,
+        )
         val githubOwnerFromEnvironment = resolvedGithubOwnerFromEnvironment()
 
-        assertThat(providers.mavenLocalEnabled.get()).isFalse()
-        assertThat(providers.mavenCentralEnabled.get()).isTrue()
-        assertThat(providers.publishingConventionsEnabled.get()).isTrue()
-        assertThat(providers.publishingGithubPackagesEnabled.get()).isTrue()
+        assertThat(providers.mavenLocalEnabled.get()).isEqualTo(mavenLocalEnabledFromEnvironment)
+        assertThat(providers.mavenCentralEnabled.get()).isEqualTo(mavenCentralEnabledFromEnvironment)
+        assertThat(providers.publishingConventionsEnabled.get()).isEqualTo(publishingConventionsEnabledFromEnvironment)
+        assertThat(providers.publishingGithubPackagesEnabled.get()).isEqualTo(publishingGithubPackagesEnabledFromEnvironment)
         assertThat(providers.publishingGithubOwner.get()).isEqualTo(githubOwnerFromEnvironment ?: "acme")
         assertThat(providers.publishingGithubRepository.get()).isEqualTo("defaults")
         assertThat(providers.publishingPomName.get()).isEqualTo("defaults")
@@ -96,9 +124,22 @@ class JavaConventionsProvidersTest {
         project.extensions.extraProperties.set("leanish.conventions.publishing.githubPackages.enabled", "false")
 
         val providers = project.javaConventionsProviders()
+        val publishingGithubPackagesEnabledFromPropertyAndEnvironment = expectedBooleanWithPropertyFallback(
+            name = PUBLISHING_GITHUB_PACKAGES_ENABLED,
+            envName = PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV,
+            propertyValue = "false",
+            defaultValue = true,
+        )
+        val publishingConventionsEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = PUBLISHING_ENABLED,
+            envName = PUBLISHING_ENABLED_ENV,
+            defaultValue = true,
+        )
 
-        assertThat(providers.publishingGithubPackagesEnabled.get()).isFalse()
-        assertThat(providers.publishingConventionsEnabled.get()).isTrue()
+        assertThat(providers.publishingGithubPackagesEnabled.get())
+            .isEqualTo(publishingGithubPackagesEnabledFromPropertyAndEnvironment)
+        assertThat(providers.publishingConventionsEnabled.get())
+            .isEqualTo(publishingConventionsEnabledFromEnvironment)
     }
 
     @Test
@@ -107,13 +148,43 @@ class JavaConventionsProvidersTest {
         project.extensions.extraProperties.set("leanish.conventions.repositories.mavenLocal.enabled", "true")
 
         val providers = project.javaConventionsProviders()
+        val mavenLocalEnabledFromPropertyAndEnvironment = expectedBooleanWithPropertyFallback(
+            name = MAVEN_LOCAL_ENABLED,
+            envName = MAVEN_LOCAL_ENABLED_ENV,
+            propertyValue = "true",
+            defaultValue = false,
+        )
+        val mavenCentralEnabledFromEnvironment = expectedBooleanFromEnvironment(
+            name = MAVEN_CENTRAL_ENABLED,
+            envName = MAVEN_CENTRAL_ENABLED_ENV,
+            defaultValue = true,
+        )
 
-        assertThat(providers.mavenLocalEnabled.get()).isTrue()
-        assertThat(providers.mavenCentralEnabled.get()).isTrue()
+        assertThat(providers.mavenLocalEnabled.get()).isEqualTo(mavenLocalEnabledFromPropertyAndEnvironment)
+        assertThat(providers.mavenCentralEnabled.get()).isEqualTo(mavenCentralEnabledFromEnvironment)
     }
 
     private fun resolvedGithubOwnerFromEnvironment(): String? {
         return System.getenv(GITHUB_REPOSITORY_OWNER_ENV)?.trim()?.takeIf(String::isNotEmpty)
+    }
+
+    private fun expectedBooleanFromEnvironment(
+        name: String,
+        envName: String,
+        defaultValue: Boolean,
+    ): Boolean {
+        val envValue = System.getenv(envName)
+        return PropertyParser.booleanProperty(name, envValue, defaultValue)
+    }
+
+    private fun expectedBooleanWithPropertyFallback(
+        name: String,
+        envName: String,
+        propertyValue: String,
+        defaultValue: Boolean,
+    ): Boolean {
+        val envValue = System.getenv(envName) ?: propertyValue
+        return PropertyParser.booleanProperty(name, envValue, defaultValue)
     }
 
     private fun newJavaProject(projectDir: File, name: String): Project {
