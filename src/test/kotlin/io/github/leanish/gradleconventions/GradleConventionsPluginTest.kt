@@ -1,6 +1,8 @@
 package io.github.leanish.gradleconventions
 
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_ID_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_NAME_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_URL_ENV
 import java.nio.file.Path
 import java.util.jar.JarFile
 import org.assertj.core.api.Assertions.assertThat
@@ -448,6 +450,47 @@ class GradleConventionsPluginTest {
 
         assertThat(result.output)
             .contains("hasMavenCentral=false")
+    }
+
+    @Test
+    fun exposesConventionPropertyNamesForWrapperPlugins() {
+        val projectDir = tempDir.resolve("convention-property-names").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"convention-property-names\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            $$"""
+            import io.github.leanish.gradleconventions.ConventionProperties
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            tasks.register("dumpConventionPropertyNames") {
+                doLast {
+                    println("mavenCentralPropertyName=${ConventionProperties.MAVEN_CENTRAL_ENABLED}")
+                    println("mavenCentralEnvName=${ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV}")
+                    println("basePackagePropertyName=${ConventionProperties.BASE_PACKAGE}")
+                    println("basePackageEnvName=${ConventionProperties.BASE_PACKAGE_ENV}")
+                }
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("dumpConventionPropertyNames")
+            .withPluginClasspath()
+            .build()
+
+        assertThat(result.output)
+            .contains("mavenCentralPropertyName=leanish.conventions.repositories.mavenCentral.enabled")
+            .contains("mavenCentralEnvName=JAVA_CONVENTIONS_MAVEN_CENTRAL_ENABLED")
+            .contains("basePackagePropertyName=leanish.conventions.basePackage")
+            .contains("basePackageEnvName=JAVA_CONVENTIONS_BASE_PACKAGE")
     }
 
     @Test
@@ -950,9 +993,9 @@ class GradleConventionsPluginTest {
             .withArguments("generatePomFileForMavenJavaPublication")
             .withEnvironment(environmentWithoutConventionsOverrides(
                 mapOf(
-                    "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_ID" to "env-id",
-                    "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_NAME" to "Env Name",
-                    "JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_URL" to "https://example.com/env",
+                    PUBLISHING_DEVELOPER_ID_ENV to "env-id",
+                    PUBLISHING_DEVELOPER_NAME_ENV to "Env Name",
+                    PUBLISHING_DEVELOPER_URL_ENV to "https://example.com/env",
                 ),
             ))
             .withPluginClasspath()

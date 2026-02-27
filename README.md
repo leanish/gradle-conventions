@@ -119,6 +119,9 @@ Environment variables are also supported, and they override `gradle.properties` 
 - `JAVA_CONVENTIONS_BASE_PACKAGE`
 - `GITHUB_REPOSITORY_OWNER` (highest precedence for publishing owner inference)
 
+Wrapper plugins can import these names directly from
+`io.github.leanish.gradleconventions.ConventionProperties` instead of duplicating string literals.
+
 `leanish.conventions.basePackage` is optional:
 - If configured, the plugin uses that value.
 - If missing, the plugin infers it from `src/main/java` package declarations, stores the inferred

@@ -5,7 +5,7 @@
  */
 package io.github.leanish.gradleconventions
 
-internal object ConventionProperties {
+object ConventionProperties {
     const val MAVEN_LOCAL_ENABLED_ENV = "JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED"
     const val MAVEN_LOCAL_ENABLED = "leanish.conventions.repositories.mavenLocal.enabled"
 
