@@ -253,12 +253,16 @@ class GradleConventionsPluginTest {
 
             tasks.register("dumpConventions") {
                 doLast {
+                    val hasMavenLocal = project.repositories
+                        .withType(MavenArtifactRepository::class.java)
+                        .any { repository -> repository.name == "MavenLocal" }
                     val hasMavenCentral = project.repositories
                         .withType(MavenArtifactRepository::class.java)
                         .any { repository ->
                             val url = repository.url.toString().removeSuffix("/")
                             url == "https://repo.maven.apache.org/maven2"
                         }
+                    println("hasMavenLocal=$hasMavenLocal")
                     println("hasMavenCentral=$hasMavenCentral")
 
                     val runtimeOnlyDependencies = configurations.getByName("testRuntimeOnly").dependencies
@@ -301,6 +305,7 @@ class GradleConventionsPluginTest {
             .build()
 
         assertThat(result.output)
+            .contains("hasMavenLocal=false")
             .contains("hasMavenCentral=true")
             .contains("hasLauncherDependency=true")
             .contains("launcherVersion=6.0.3")
@@ -447,6 +452,93 @@ class GradleConventionsPluginTest {
 
         assertThat(result.output)
             .contains("hasMavenCentral=false")
+    }
+
+    @Test
+    fun canEnableMavenLocalRepositoryWithProperty() {
+        val projectDir = tempDir.resolve("maven-local-toggle").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-maven-local-toggle\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            $$"""
+            import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            tasks.register("dumpConventions") {
+                doLast {
+                    val hasMavenLocal = project.repositories
+                        .withType(MavenArtifactRepository::class.java)
+                        .any { repository -> repository.name == "MavenLocal" }
+                    println("hasMavenLocal=$hasMavenLocal")
+                }
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "-Pleanish.conventions.repositories.mavenLocal.enabled=true",
+                "dumpConventions",
+            )
+            .withPluginClasspath()
+            .build()
+
+        assertThat(result.output)
+            .contains("hasMavenLocal=true")
+    }
+
+    @Test
+    fun mavenLocalEnvironmentOverridesProperty() {
+        val projectDir = tempDir.resolve("maven-local-toggle-env").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"test-maven-local-toggle-env\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            $$"""
+            import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            tasks.register("dumpConventions") {
+                doLast {
+                    val hasMavenLocal = project.repositories
+                        .withType(MavenArtifactRepository::class.java)
+                        .any { repository -> repository.name == "MavenLocal" }
+                    println("hasMavenLocal=$hasMavenLocal")
+                }
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "-Pleanish.conventions.repositories.mavenLocal.enabled=false",
+                "dumpConventions",
+            )
+            .withEnvironment(
+                mapOf(
+                    "JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED" to "true",
+                ),
+            )
+            .withPluginClasspath()
+            .build()
+
+        assertThat(result.output)
+            .contains("hasMavenLocal=true")
     }
 
     @Test

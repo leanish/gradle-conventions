@@ -3,12 +3,16 @@
 ## 0.4.0
 
 ### Added
+- Optional `mavenLocal()` dependency repository toggle (disabled by default):
+  - `leanish.conventions.repositories.mavenLocal.enabled`
+  - `JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED`
 - Fine-grained publishing toggle for GitHub Packages:
   - `leanish.conventions.publishing.githubPackages.enabled`
   - `JAVA_CONVENTIONS_PUBLISHING_GITHUB_PACKAGES_ENABLED`
 - Explicit fail-fast validation when a repository named `GitHubPackages` already exists but is not a Maven repository.
 
 ### Changed
+- Publishing conventions no longer auto-add `mavenLocal()` as a publishing repository.
 - `maven-publish` conventions remain enabled by `leanish.conventions.publishing.enabled`, while GitHub Packages publishing can be disabled independently.
 
 ## 0.3.1

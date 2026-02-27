@@ -35,6 +35,7 @@ class JavaConventionsProvidersTest {
         val providers = project.javaConventionsProviders()
         val githubOwnerFromEnvironment = resolvedGithubOwnerFromEnvironment()
 
+        assertThat(providers.mavenLocalEnabled.get()).isFalse()
         assertThat(providers.mavenCentralEnabled.get()).isTrue()
         assertThat(providers.publishingConventionsEnabled.get()).isTrue()
         assertThat(providers.publishingGithubPackagesEnabled.get()).isTrue()
@@ -98,6 +99,17 @@ class JavaConventionsProvidersTest {
 
         assertThat(providers.publishingGithubPackagesEnabled.get()).isFalse()
         assertThat(providers.publishingConventionsEnabled.get()).isTrue()
+    }
+
+    @Test
+    fun mavenLocalEnabledCanBeEnabledWithProperty() {
+        val project = newJavaProject(tempDir.resolve("maven-local-enabled").toFile(), "maven-local-enabled")
+        project.extensions.extraProperties.set("leanish.conventions.repositories.mavenLocal.enabled", "true")
+
+        val providers = project.javaConventionsProviders()
+
+        assertThat(providers.mavenLocalEnabled.get()).isTrue()
+        assertThat(providers.mavenCentralEnabled.get()).isTrue()
     }
 
     private fun resolvedGithubOwnerFromEnvironment(): String? {

@@ -8,6 +8,8 @@ package io.github.leanish.gradleconventions
 import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE
 import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.GITHUB_REPOSITORY_OWNER_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED
 import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED
@@ -26,6 +28,7 @@ import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainService
 
 internal data class JavaConventionsProviders(
+    val mavenLocalEnabled: Provider<Boolean>,
     val mavenCentralEnabled: Provider<Boolean>,
     val publishingConventionsEnabled: Provider<Boolean>,
     val publishingGithubPackagesEnabled: Provider<Boolean>,
@@ -40,6 +43,11 @@ internal data class JavaConventionsProviders(
 )
 
 internal fun Project.javaConventionsProviders(): JavaConventionsProviders {
+    val mavenLocalEnabled = booleanProperty(
+        name = MAVEN_LOCAL_ENABLED,
+        envName = MAVEN_LOCAL_ENABLED_ENV,
+        defaultValue = false,
+    )
     val mavenCentralEnabled = booleanProperty(
         name = MAVEN_CENTRAL_ENABLED,
         envName = MAVEN_CENTRAL_ENABLED_ENV,
@@ -105,6 +113,7 @@ internal fun Project.javaConventionsProviders(): JavaConventionsProviders {
     }
 
     return JavaConventionsProviders(
+        mavenLocalEnabled = mavenLocalEnabled,
         mavenCentralEnabled = mavenCentralEnabled,
         publishingConventionsEnabled = publishingConventionsEnabled,
         publishingGithubPackagesEnabled = publishingGithubPackagesEnabled,

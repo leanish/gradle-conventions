@@ -6,7 +6,7 @@ Shared Gradle conventions for JDK-based projects.
 - Applies common plugins: `java`, `checkstyle`, `jacoco`, `spotless`, `errorprone`.
 - Configures Java toolchain, runtime launcher, and bytecode level (defaults to JDK 25 from any available vendor).
 - The plugin itself uses Kotlin/JVM 21 (Gradle embeds Kotlin 2.2.x today).
-- Adds `mavenCentral()` by default (configurable).
+- Adds `mavenCentral()` by default and can optionally add `mavenLocal()` (both configurable).
 - Sets Checkstyle tool version and uses project-level Checkstyle files when provided (bundled defaults otherwise).
 - Sets JaCoCo tool version and enforces instruction coverage.
 - Configures Spotless for basic Java formatting (unused imports, trailing whitespace, newline at EOF).
@@ -14,7 +14,7 @@ Shared Gradle conventions for JDK-based projects.
 - Adds common compile/test dependencies (Lombok, JSpecify, JetBrains annotations, Error Prone/NullAway, JUnit Jupiter, AssertJ).
 - Configures all `Test` tasks to use JUnit Platform and adds JUnit Platform launcher as `testRuntimeOnly`.
 - Enables `sourcesJar` and `javadocJar` generation.
-- Adds `maven-publish` conventions by default (`mavenJava` publication + `mavenLocal`/GitHub Packages repositories).
+- Adds `maven-publish` conventions by default (`mavenJava` publication + optional GitHub Packages repository).
 - Resolves `leanish.conventions.basePackage` from project config or infers it from `src/main/java` package declarations.
 - Adds root-only helper tasks (`installGitHooks`, `setupProject`) and makes `build` depend on `installGitHooks`.
 - Makes `check` depend on every `JacocoCoverageVerification` task.
@@ -91,6 +91,7 @@ Configure behavior through `gradle.properties` (or `-P...`):
 
 ```properties
 # Repository conventions
+leanish.conventions.repositories.mavenLocal.enabled=false
 leanish.conventions.repositories.mavenCentral.enabled=true
 
 # Publishing conventions
@@ -108,7 +109,9 @@ leanish.conventions.basePackage=io.github.leanish
 
 Environment variables are also supported, and they override `gradle.properties` / `-P` values:
 - `JAVA_CONVENTIONS_MAVEN_CENTRAL_ENABLED`
+- `JAVA_CONVENTIONS_MAVEN_LOCAL_ENABLED`
 - `JAVA_CONVENTIONS_PUBLISHING_ENABLED`
+- `JAVA_CONVENTIONS_PUBLISHING_GITHUB_PACKAGES_ENABLED`
 - `JAVA_CONVENTIONS_PUBLISHING_GITHUB_OWNER`
 - `JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_ID`
 - `JAVA_CONVENTIONS_PUBLISHING_DEVELOPER_NAME`
