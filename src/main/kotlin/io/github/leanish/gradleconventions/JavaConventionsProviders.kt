@@ -12,6 +12,8 @@ import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_EN
 import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER_ENV
 import java.io.File
@@ -26,6 +28,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService
 internal data class JavaConventionsProviders(
     val mavenCentralEnabled: Provider<Boolean>,
     val publishingConventionsEnabled: Provider<Boolean>,
+    val publishingGithubPackagesEnabled: Provider<Boolean>,
     val publishingGithubOwner: Provider<String>,
     val publishingGithubRepository: Provider<String>,
     val publishingPomName: Provider<String>,
@@ -45,6 +48,11 @@ internal fun Project.javaConventionsProviders(): JavaConventionsProviders {
     val publishingConventionsEnabled = booleanProperty(
         name = PUBLISHING_ENABLED,
         envName = PUBLISHING_ENABLED_ENV,
+        defaultValue = true,
+    )
+    val publishingGithubPackagesEnabled = booleanProperty(
+        name = PUBLISHING_GITHUB_PACKAGES_ENABLED,
+        envName = PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV,
         defaultValue = true,
     )
     val publishingGithubOwner = providers.provider {
@@ -99,6 +107,7 @@ internal fun Project.javaConventionsProviders(): JavaConventionsProviders {
     return JavaConventionsProviders(
         mavenCentralEnabled = mavenCentralEnabled,
         publishingConventionsEnabled = publishingConventionsEnabled,
+        publishingGithubPackagesEnabled = publishingGithubPackagesEnabled,
         publishingGithubOwner = publishingGithubOwner,
         publishingGithubRepository = publishingGithubRepository,
         publishingPomName = publishingPomName,

@@ -12,6 +12,9 @@ internal object ConventionProperties {
     const val PUBLISHING_ENABLED_ENV = "JAVA_CONVENTIONS_PUBLISHING_ENABLED"
     const val PUBLISHING_ENABLED = "leanish.conventions.publishing.enabled"
 
+    const val PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV = "JAVA_CONVENTIONS_PUBLISHING_GITHUB_PACKAGES_ENABLED"
+    const val PUBLISHING_GITHUB_PACKAGES_ENABLED = "leanish.conventions.publishing.githubPackages.enabled"
+
     const val PUBLISHING_GITHUB_OWNER_ENV = "JAVA_CONVENTIONS_PUBLISHING_GITHUB_OWNER"
     const val GITHUB_REPOSITORY_OWNER_ENV = "GITHUB_REPOSITORY_OWNER" // GitHub-native env var
     const val PUBLISHING_GITHUB_OWNER = "leanish.conventions.publishing.githubOwner"

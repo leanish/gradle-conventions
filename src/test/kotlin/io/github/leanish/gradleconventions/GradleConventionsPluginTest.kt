@@ -1102,6 +1102,38 @@ class GradleConventionsPluginTest {
     }
 
     @Test
+    fun canDisableGithubPackagesPublishingWithPropertyWhileKeepingMavenLocalPublishing() {
+        val projectDir = tempDir.resolve("publishing-github-packages-disabled").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"publishing-github-packages-disabled\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+            """.trimIndent(),
+        )
+
+        val tasksResult = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments(
+                "-Pleanish.conventions.publishing.githubPackages.enabled=false",
+                "tasks",
+                "--all",
+            )
+            .withPluginClasspath()
+            .build()
+
+        assertThat(tasksResult.output)
+            .contains("publishMavenJavaPublicationToMavenLocal")
+            .doesNotContain("publishMavenJavaPublicationToGitHubPackagesRepository")
+    }
+
+    @Test
     fun appliesLicenseHeaderWhenLicenseHeaderFileExists() {
         val projectDir = tempDir.resolve("license-header").toFile()
         projectDir.mkdirs()
