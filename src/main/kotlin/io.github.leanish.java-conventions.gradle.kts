@@ -42,6 +42,7 @@ val excludedTags: List<String> = providers.systemProperty("excludeTags")
     .getOrElse(emptyList())
 
 private val conventionProviders = javaConventionsProviders()
+val mavenLocalEnabled = conventionProviders.mavenLocalEnabled
 val mavenCentralEnabled = conventionProviders.mavenCentralEnabled
 val publishingConventionsEnabled = conventionProviders.publishingConventionsEnabled
 val publishingGithubPackagesEnabled = conventionProviders.publishingGithubPackagesEnabled
@@ -66,6 +67,9 @@ java {
 }
 
 repositories {
+    if (mavenLocalEnabled.get()) {
+        mavenLocal()
+    }
     if (mavenCentralEnabled.get()) {
         mavenCentral()
     }
