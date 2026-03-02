@@ -8,8 +8,19 @@ permissions:
   packages: write
 
 jobs:
+  check-java-25:
+    name: Checking on JDK 25
+    uses: ./.github/workflows/ci.yml
+
+  test-legacy-jdk:
+    name: Testing on Legacy JDKs
+    uses: ./.github/workflows/testing-legacy-jdk.yml
+
   publish:
     name: Publish to GitHub Packages
+    needs:
+      - check-java-25
+      - test-legacy-jdk
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +46,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Publish to GitHub Packages
-        run: ./gradlew build publishAllPublicationsToGitHubPackagesRepository
+        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload publish artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: publish-artifacts
+          path: |
+            build/test-results/**
+            build/reports/**
+            build/publications/**
