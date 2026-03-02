@@ -56,6 +56,7 @@ val checkstyleConfigFile = conventionProviders.checkstyleConfigFile
 val runtimeLauncher = conventionProviders.runtimeLauncher
 
 val defaultJdkVersion = 25
+val minimumSupportedToolchainVersion = 21
 java {
     // Keep in sync with the release flag for IDE/tooling metadata; javac uses options.release.
     sourceCompatibility = JavaVersion.toVersion(defaultJdkVersion)
@@ -64,6 +65,17 @@ java {
     }
     withSourcesJar()
     withJavadocJar()
+}
+
+afterEvaluate {
+    val configuredToolchainVersion = java.toolchain.languageVersion.orNull?.asInt()
+    if (configuredToolchainVersion != null && configuredToolchainVersion < minimumSupportedToolchainVersion) {
+        throw GradleException(
+            "Java toolchain languageVersion must be >= $minimumSupportedToolchainVersion. " +
+                "Configured: $configuredToolchainVersion. " +
+                "Checkstyle 13.x and Error Prone require toolchain JDK 21+.",
+        )
+    }
 }
 
 repositories {

@@ -21,7 +21,7 @@ Shared Gradle conventions for JDK-based projects.
 
 ## How to use
 Use the Gradle Plugin Portal for released versions.
-For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your target version (for example, `0.4.0`).
+For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your target version (for example, `0.5.0`).
 
 The plugin adds `mavenCentral()` by default to every project where it is applied.
 The canonical plugin id is `io.github.leanish.java-conventions`.
@@ -31,7 +31,7 @@ The canonical plugin id is `io.github.leanish.java-conventions`.
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.4.0"
+    id("io.github.leanish.java-conventions") version "0.5.0"
 }
 ```
 
@@ -45,7 +45,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        id("io.github.leanish.java-conventions") version "0.4.0"
+        id("io.github.leanish.java-conventions") version "0.5.0"
     }
 }
 ```
@@ -82,7 +82,7 @@ If you want root-only tasks (`installGitHooks`, `setupProject`) in a multi-proje
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.4.0"
+    id("io.github.leanish.java-conventions") version "0.5.0"
 }
 ```
 
@@ -288,10 +288,15 @@ It:
 - Sets NullAway annotated packages from resolved `leanish.conventions.basePackage`.
 - Disables Error Prone for `compileTestJava`.
 
+> **Runtime requirement:** Error Prone runs as a `javac` annotation processor and requires the **Java compilation toolchain** to be JDK 21 or newer. The default JDK 25 toolchain satisfies this. Overriding the toolchain below JDK 21 (e.g. `java { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }`) will cause compilation to fail.
+
+> **Fail-fast validation:** The plugin validates the configured Java toolchain during configuration and fails early with a descriptive error when `languageVersion < 21`.
+
 ## Notes
 - Checkstyle uses `config/checkstyle/checkstyle.xml` and `config/checkstyle/suppressions.xml` when present in the consumer project.
 - If either file is missing, the plugin falls back to bundled defaults (`checkstyle.xml` and empty suppressions).
 - These files are materialized under `build/generated/checkstyle` for Checkstyle only and are not packaged into JARs/publications.
+- **Checkstyle runtime requirement:** Checkstyle 13.x requires the **Java toolchain used by the plugin's runtime launcher** to be JDK 21 or newer. The default toolchain is JDK 25, which satisfies this. If you override the project Java toolchain to a version lower than JDK 21, Checkstyle tasks will fail even when the Gradle daemon itself runs on a newer JDK.
 - The plugin does not add a toolchain resolver; ensure the configured JDK is available locally or add a resolver in the consuming project.
 - Dependencies added by the plugin are additive; your project dependencies remain in effect.
 - The bundled pre-commit hook runs `./gradlew spotlessApply` and `./gradlew checkstyleMain checkstyleTest`, and may modify files before commit.
