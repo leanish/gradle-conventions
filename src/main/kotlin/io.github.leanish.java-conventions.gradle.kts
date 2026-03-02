@@ -78,10 +78,10 @@ repositories {
 dependencies {
     compileOnly("org.jspecify:jspecify:1.0.0")
     testCompileOnly("org.jspecify:jspecify:1.0.0")
-    compileOnly("org.jetbrains:annotations:26.0.2-1")
-    testCompileOnly("org.jetbrains:annotations:26.0.2-1")
-    compileOnly("com.google.errorprone:error_prone_annotations:2.47.0")
-    testCompileOnly("com.google.errorprone:error_prone_annotations:2.47.0")
+    compileOnly("org.jetbrains:annotations:26.1.0")
+    testCompileOnly("org.jetbrains:annotations:26.1.0")
+    compileOnly("com.google.errorprone:error_prone_annotations:2.48.0")
+    testCompileOnly("com.google.errorprone:error_prone_annotations:2.48.0")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
@@ -89,7 +89,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
 
-    errorprone("com.google.errorprone:error_prone_core:2.47.0")
+    errorprone("com.google.errorprone:error_prone_core:2.48.0")
     errorprone("com.uber.nullaway:nullaway:0.13.1")
 }
 
@@ -248,7 +248,7 @@ private val writeCheckstyleConfig = tasks.register<WriteCheckstyleConfigTask>("w
 }
 
 checkstyle {
-    toolVersion = "12.1.2"
+    toolVersion = "13.3.0"
     maxWarnings = 0
 }
 
