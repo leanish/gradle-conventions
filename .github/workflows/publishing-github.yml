@@ -27,12 +27,12 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v6
 
-      # Kotlin DSL compilation uses JDK 21 today (Gradle embeds Kotlin 2.2.x)
-      - name: Set up JDK 21 (Kotlin DSL toolchain)
+      # Kotlin plugin code targets JVM 17; JDK 17 is needed as the Kotlin compilation toolchain.
+      - name: Set up JDK 17 (Kotlin compilation toolchain)
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
 
       # Tests/Java toolchain tasks use JDK 25
       # JDK declaration order matters as the last one declared will be the default one (thus used to run Gradle itself)
