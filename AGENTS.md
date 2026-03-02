@@ -32,6 +32,7 @@ Current baseline:
 - CI baseline: JDK `25` (`.github/workflows/ci.yml`).
 - Plugin build toolchains: Java `25` and Kotlin/JVM toolchain `17`.
 - Consumer default conventions: Java toolchain/release `25` unless overridden by the consumer build.
+- Minimum supported consumer Java toolchain language version: `21` (the plugin fails fast below this).
 
 Rules:
 

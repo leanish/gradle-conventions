@@ -5,6 +5,7 @@
 ### Changed
 - Lowered plugin JAR bytecode target from JVM 21 to JVM 17;
   the plugin can now be loaded by Gradle running on JDK 17+.
+- Added fail-fast validation that rejects consumer Java toolchains below JDK 21 with a clear error message.
 - Upgraded Checkstyle from `12.1.2` to `13.3.0`. Consumers with a custom
   `config/checkstyle/checkstyle.xml` should verify compatibility.
 - Upgraded plugin build dependency:

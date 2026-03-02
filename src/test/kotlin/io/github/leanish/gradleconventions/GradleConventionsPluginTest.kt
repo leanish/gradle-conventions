@@ -799,6 +799,42 @@ class GradleConventionsPluginTest {
     }
 
     @Test
+    fun failsFastWhenJavaToolchainIsBelow21() {
+        val projectDir = tempDir.resolve("toolchain-below-21").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"toolchain-below-21\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            import org.gradle.jvm.toolchain.JavaLanguageVersion
+
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(17))
+                }
+            }
+            """.trimIndent(),
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("tasks", "--all")
+            .withPluginClasspath()
+            .buildAndFail()
+
+        assertThat(result.output)
+            .contains("Java toolchain languageVersion must be >= 21")
+            .contains("Configured: 17")
+    }
+
+    @Test
     fun appliesPublishingConventionsByDefault() {
         val projectDir = tempDir.resolve("publishing-conventions").toFile()
         projectDir.mkdirs()
