@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.leanish"
-version = "0.4.0"
+version = "0.4.1-SNAPSHOT"
 
 repositories {
     gradlePluginPortal()
@@ -32,7 +32,7 @@ kotlin {
 
 dependencies {
     implementation("com.diffplug.spotless:spotless-plugin-gradle:8.2.1")
-    implementation("net.ltgt.gradle:gradle-errorprone-plugin:5.0.0")
+    implementation("net.ltgt.gradle:gradle-errorprone-plugin:5.1.0")
     testImplementation(gradleTestKit())
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
