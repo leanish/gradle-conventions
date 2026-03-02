@@ -5,7 +5,7 @@ Shared Gradle conventions for JDK-based projects.
 ## What it provides
 - Applies common plugins: `java`, `checkstyle`, `jacoco`, `spotless`, `errorprone`.
 - Configures Java toolchain, runtime launcher, and bytecode level (defaults to JDK 25 from any available vendor).
-- The plugin itself uses Kotlin/JVM 21 (Gradle embeds Kotlin 2.2.x today).
+- The plugin itself targets Kotlin/JVM 17.
 - Adds `mavenCentral()` by default and can optionally add `mavenLocal()` (both configurable).
 - Sets Checkstyle tool version and uses project-level Checkstyle files when provided (bundled defaults otherwise).
 - Sets JaCoCo tool version and enforces instruction coverage.

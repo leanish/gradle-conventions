@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.0
+
+### Changed
+- Lowered plugin JAR bytecode target from JVM 21 to JVM 17;
+  the plugin can now be loaded by Gradle running on JDK 17+.
+- Upgraded Checkstyle from `12.1.2` to `13.3.0`. Consumers with a custom
+  `config/checkstyle/checkstyle.xml` should verify compatibility.
+- Upgraded plugin build dependency:
+  - `net.ltgt.gradle:gradle-errorprone-plugin` from `5.0.0` to `5.1.0`
+- Upgraded consumer-injected annotation dependencies:
+  - `org.jetbrains:annotations` from `26.0.2-1` to `26.1.0`
+  - `com.google.errorprone:error_prone_annotations` from `2.47.0` to `2.48.0`
+  - `com.google.errorprone:error_prone_core` from `2.47.0` to `2.48.0`
+
 ## 0.4.0
 
 ### Added
