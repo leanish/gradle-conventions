@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.2
+
+### Added
+- Added `org.projectlombok:lombok:1.18.42` to consumer `testCompileOnly` dependencies,
+  aligning test compile classpath behavior with existing Lombok test annotation processing.
+
+### Changed
+- Upgraded Spotless from `8.2.1` to `8.3.0`.
+
 ## 0.5.1
 
 ### Changed
