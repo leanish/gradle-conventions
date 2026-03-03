@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.leanish"
-version = "0.5.2-SNAPSHOT"
+version = "0.5.2"
 
 repositories {
     gradlePluginPortal()
@@ -35,25 +35,25 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
 }
 
-val defaultTestRuntimeJavaVersion = 25
-val testRuntimeJavaVersion = providers.gradleProperty("javaConventions.runtimeJdkVersion")
+val defaultRuntimeJavaVersion = 25
+val runtimeJavaVersion = providers.gradleProperty("javaConventions.runtimeJdkVersion")
     .map(String::toInt)
-    .orElse(defaultTestRuntimeJavaVersion)
-val testRuntimeLauncher = project.extensions.getByType<JavaToolchainService>().launcherFor {
-    languageVersion.set(testRuntimeJavaVersion.map(JavaLanguageVersion::of))
+    .orElse(defaultRuntimeJavaVersion)
+val runtimeLauncher = project.extensions.getByType<JavaToolchainService>().launcherFor {
+    languageVersion.set(runtimeJavaVersion.map(JavaLanguageVersion::of))
 }
 
 val coverageIncludes = listOf("io/github/leanish/gradleconventions/**")
 
 tasks.withType<JavaExec>().configureEach {
     // Keep runtime Java version aligned with legacy workflow matrix checks.
-    javaLauncher.set(testRuntimeLauncher)
+    javaLauncher.set(runtimeLauncher)
 }
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     // Keep test Java version aligned with legacy workflow matrix checks.
-    javaLauncher.set(testRuntimeLauncher)
+    javaLauncher.set(runtimeLauncher)
 }
 
 jacoco {
