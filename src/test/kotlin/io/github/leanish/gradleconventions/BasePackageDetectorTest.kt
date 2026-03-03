@@ -1,10 +1,10 @@
 package io.github.leanish.gradleconventions
 
-import java.nio.file.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class BasePackageDetectorTest {
     @TempDir

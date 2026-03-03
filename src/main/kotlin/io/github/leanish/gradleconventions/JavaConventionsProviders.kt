@@ -8,17 +8,16 @@ package io.github.leanish.gradleconventions
 import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE
 import io.github.leanish.gradleconventions.ConventionProperties.BASE_PACKAGE_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.GITHUB_REPOSITORY_OWNER_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED
-import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED
 import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_CENTRAL_ENABLED_ENV
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.MAVEN_LOCAL_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED_ENV
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED
-import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_OWNER_ENV
-import java.io.File
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED
+import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -26,6 +25,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainService
+import java.io.File
 
 internal data class JavaConventionsProviders(
     val mavenLocalEnabled: Provider<Boolean>,
