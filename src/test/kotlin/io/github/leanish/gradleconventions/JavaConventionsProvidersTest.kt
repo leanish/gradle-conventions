@@ -10,8 +10,6 @@ import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABL
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_ENABLED_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_GITHUB_PACKAGES_ENABLED_ENV
-import java.io.File
-import java.nio.file.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.api.GradleException
@@ -21,6 +19,8 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.io.File
+import java.nio.file.Path
 
 class JavaConventionsProvidersTest {
     @TempDir

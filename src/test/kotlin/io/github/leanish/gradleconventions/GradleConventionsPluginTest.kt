@@ -3,12 +3,12 @@ package io.github.leanish.gradleconventions
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_ID_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_NAME_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_URL_ENV
-import java.nio.file.Path
-import java.util.jar.JarFile
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
+import java.util.jar.JarFile
 
 class GradleConventionsPluginTest {
     @TempDir

@@ -5,8 +5,8 @@
  */
 package io.github.leanish.gradleconventions
 
-import java.io.File
 import org.gradle.api.Project
+import java.io.File
 
 internal object BasePackageDetector {
     private val packageRegex = Regex("""^\s*package\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*;""")

@@ -1,13 +1,13 @@
 package io.github.leanish.gradleconventions
 
-import java.io.File
-import java.nio.file.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.io.File
+import java.nio.file.Path
 
 class WriteCheckstyleConfigTaskTest {
     @TempDir

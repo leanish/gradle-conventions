@@ -13,21 +13,11 @@ import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVEL
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_NAME_ENV
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_URL
 import io.github.leanish.gradleconventions.ConventionProperties.PUBLISHING_DEVELOPER_URL_ENV
-import io.github.leanish.gradleconventions.javaConventionsProviders
-import io.github.leanish.gradleconventions.stringProperty
 import io.github.leanish.gradleconventions.PropertyParser
 import io.github.leanish.gradleconventions.WriteCheckstyleConfigTask
-import java.io.File
-import org.gradle.api.GradleException
-import org.gradle.api.JavaVersion
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository
-import org.gradle.api.plugins.quality.Checkstyle
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.jvm.toolchain.JavaLanguageVersion
+import io.github.leanish.gradleconventions.javaConventionsProviders
+import io.github.leanish.gradleconventions.stringProperty
 import net.ltgt.gradle.errorprone.errorprone
-import org.gradle.testing.jacoco.tasks.JacocoReport
-import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
 plugins {
     java
