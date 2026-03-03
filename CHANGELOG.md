@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2
+
+### Added
+- Added `org.projectlombok:lombok:1.18.42` to consumer `testCompileOnly` dependencies,
+  aligning test compile classpath behavior with existing Lombok test annotation processing.
+
 ## 0.5.1
 
 ### Changed
