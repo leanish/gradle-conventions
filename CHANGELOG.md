@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+### Changed
+- Renamed plugin-project runtime override property from `javaConventions.testRuntimeJdkVersion`
+  to `javaConventions.runtimeJdkVersion` in build logic, legacy JDK workflow, and maintainer docs.
+
 ## 0.5.0
 
 ### Changed

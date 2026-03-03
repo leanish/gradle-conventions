@@ -300,3 +300,10 @@ It:
 - The plugin does not add a toolchain resolver; ensure the configured JDK is available locally or add a resolver in the consuming project.
 - Dependencies added by the plugin are additive; your project dependencies remain in effect.
 - The bundled pre-commit hook runs `./gradlew spotlessApply` and `./gradlew checkstyleMain checkstyleTest`, and may modify files before commit.
+
+## Plugin project CI (maintainers)
+- `.github/workflows/ci.yml` runs the default build path (Kotlin compilation toolchain on JDK 17, Gradle runtime/toolchain tasks on JDK 25).
+- `.github/workflows/testing-legacy-jdk.yml` runs a matrix on legacy runtime JDKs (`17`, `21`).
+- The legacy matrix uses `-PjavaConventions.runtimeJdkVersion=<version>` to set the plugin project's own `Test`/`JavaExec` runtime launcher.
+- `javaConventions.runtimeJdkVersion` is a plugin-project testing override only; it is not a consumer convention property.
+- `.github/workflows/publishing-github.yml` requires both `ci.yml` and `testing-legacy-jdk.yml` jobs to pass before publishing.
