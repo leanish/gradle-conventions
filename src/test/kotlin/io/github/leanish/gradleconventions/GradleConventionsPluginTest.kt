@@ -283,6 +283,20 @@ class GradleConventionsPluginTest {
                     println("hasAssertjDependency=${assertjDependency != null}")
                     println("assertjVersion=${assertjDependency?.version}")
 
+                    val testCompileOnlyDependencies = configurations.getByName("testCompileOnly").dependencies
+                    val lombokTestCompileOnlyDependency = testCompileOnlyDependencies.firstOrNull {
+                        it.group == "org.projectlombok" && it.name == "lombok"
+                    }
+                    println("hasLombokTestCompileOnlyDependency=${lombokTestCompileOnlyDependency != null}")
+                    println("lombokTestCompileOnlyVersion=${lombokTestCompileOnlyDependency?.version}")
+
+                    val testAnnotationProcessorDependencies = configurations.getByName("testAnnotationProcessor").dependencies
+                    val lombokTestAnnotationProcessorDependency = testAnnotationProcessorDependencies.firstOrNull {
+                        it.group == "org.projectlombok" && it.name == "lombok"
+                    }
+                    println("hasLombokTestAnnotationProcessorDependency=${lombokTestAnnotationProcessorDependency != null}")
+                    println("lombokTestAnnotationProcessorVersion=${lombokTestAnnotationProcessorDependency?.version}")
+
                     println("hasSourcesJarTask=${project.tasks.findByName("sourcesJar") != null}")
                     println("hasJavadocJarTask=${project.tasks.findByName("javadocJar") != null}")
 
@@ -311,6 +325,10 @@ class GradleConventionsPluginTest {
             .contains("junitJupiterVersion=6.0.3")
             .contains("hasAssertjDependency=true")
             .contains("assertjVersion=3.27.7")
+            .contains("hasLombokTestCompileOnlyDependency=true")
+            .contains("lombokTestCompileOnlyVersion=1.18.42")
+            .contains("hasLombokTestAnnotationProcessorDependency=true")
+            .contains("lombokTestAnnotationProcessorVersion=1.18.42")
             .contains("hasSourcesJarTask=true")
             .contains("hasJavadocJarTask=true")
             .contains("nullAwayConfigured=true")

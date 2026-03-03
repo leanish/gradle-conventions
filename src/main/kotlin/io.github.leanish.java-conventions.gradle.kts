@@ -85,6 +85,7 @@ dependencies {
     compileOnly("com.google.errorprone:error_prone_annotations:2.48.0")
     testCompileOnly("com.google.errorprone:error_prone_annotations:2.48.0")
     compileOnly("org.projectlombok:lombok:1.18.42")
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
