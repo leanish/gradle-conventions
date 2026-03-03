@@ -46,7 +46,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Check
-        run: ./gradlew check -PjavaConventions.testRuntimeJdkVersion=${{ matrix.java-version }}
+        run: ./gradlew check -PjavaConventions.runtimeJdkVersion=${{ matrix.java-version }}
 
       - name: Upload build artifacts on failure
         if: failure()

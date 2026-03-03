@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.leanish"
-version = "0.5.0"
+version = "0.5.1-SNAPSHOT"
 
 repositories {
     gradlePluginPortal()
@@ -39,7 +39,7 @@ dependencies {
 }
 
 val defaultTestRuntimeJavaVersion = 25
-val testRuntimeJavaVersion = providers.gradleProperty("javaConventions.testRuntimeJdkVersion")
+val testRuntimeJavaVersion = providers.gradleProperty("javaConventions.runtimeJdkVersion")
     .map(String::toInt)
     .orElse(defaultTestRuntimeJavaVersion)
 val testRuntimeLauncher = project.extensions.getByType<JavaToolchainService>().launcherFor {
