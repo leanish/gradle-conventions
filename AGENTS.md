@@ -28,7 +28,7 @@ If contract behavior changes, update tests and README in the same change.
 
 Current baseline:
 
-- Gradle baseline: wrapper version from `gradle/wrapper/gradle-wrapper.properties` (currently `9.3.1`).
+- Gradle baseline: wrapper version from `gradle/wrapper/gradle-wrapper.properties`.
 - CI baseline: JDK `25` (`.github/workflows/ci.yml`).
 - Plugin build toolchains: Java `25` and Kotlin/JVM toolchain `17`.
 - Consumer default conventions: Java toolchain/release `25` unless overridden by the consumer build.

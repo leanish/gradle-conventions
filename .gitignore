@@ -1,5 +1,14 @@
-/.claude/
+# Gradle
 /.gradle/
-/.idea/
-/.kotlin/
+/.gradle-*/
 /build/
+
+# IDE
+/.idea/
+
+# OS
+**/.DS_Store
+
+# Other
+/.claude/
+/.kotlin/

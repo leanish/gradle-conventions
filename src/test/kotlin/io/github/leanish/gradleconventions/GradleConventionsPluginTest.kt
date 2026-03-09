@@ -1458,6 +1458,48 @@ class GradleConventionsPluginTest {
     }
 
     @Test
+    fun checkstyleMainRunsOnCurrentGradleBaselineWhenPluginIsApplied() {
+        val projectDir = tempDir.resolve("checkstyle-gradle-baseline").toFile()
+        projectDir.mkdirs()
+        writeRequiredConventionsProperties(projectDir)
+
+        writeFile(projectDir, "settings.gradle.kts", "rootProject.name = \"checkstyle-gradle-baseline\"")
+        writeFile(
+            projectDir,
+            "build.gradle.kts",
+            """
+            plugins {
+                id("io.github.leanish.java-conventions")
+            }
+            """.trimIndent(),
+        )
+        writeFile(
+            projectDir,
+            "src/main/java/io/github/leanish/sample/Sample.java",
+            """
+            package io.github.leanish.sample;
+
+            /** Sample type. */
+            public class Sample {
+                /** Returns a stable value. */
+                public String value() {
+                    return "ok";
+                }
+            }
+            """.trimIndent(),
+        )
+
+        GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("checkstyleMain")
+            .withPluginClasspath()
+            .build()
+
+        assertThat(projectDir.resolve("build/generated/checkstyle/checkstyle.xml")).exists()
+        assertThat(projectDir.resolve("build/generated/checkstyle/suppressions.xml")).exists()
+    }
+
+    @Test
     fun writeCheckstyleConfigUsesProjectFilesWhenPresent() {
         val projectDir = tempDir.resolve("checkstyle-project-files").toFile()
         projectDir.mkdirs()
