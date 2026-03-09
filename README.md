@@ -21,7 +21,7 @@ Shared Gradle conventions for JDK-based projects.
 
 ## How to use
 Use the Gradle Plugin Portal for released versions.
-For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your target version (for example, `0.5.0`).
+For local development of unreleased changes, publish this plugin to `mavenLocal()` and use your target version (for example, `0.5.3`).
 
 The plugin adds `mavenCentral()` by default to every project where it is applied.
 The canonical plugin id is `io.github.leanish.java-conventions`.
@@ -31,7 +31,7 @@ The canonical plugin id is `io.github.leanish.java-conventions`.
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.5.0"
+    id("io.github.leanish.java-conventions") version "0.5.3"
 }
 ```
 
@@ -45,7 +45,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        id("io.github.leanish.java-conventions") version "0.5.0"
+        id("io.github.leanish.java-conventions") version "0.5.3"
     }
 }
 ```
@@ -82,7 +82,7 @@ If you want root-only tasks (`installGitHooks`, `setupProject`) in a multi-proje
 
 ```kotlin
 plugins {
-    id("io.github.leanish.java-conventions") version "0.5.0"
+    id("io.github.leanish.java-conventions") version "0.5.3"
 }
 ```
 
