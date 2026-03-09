@@ -8,12 +8,14 @@ package io.github.leanish.gradleconventions
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import java.nio.charset.StandardCharsets.UTF_8
 
 /**
  * Materializes the Checkstyle files used by conventions into the build directory.
@@ -24,9 +26,10 @@ import org.gradle.api.tasks.TaskAction
  * - Copies the consumer project's `suppressions.xml` into the generated config directory when provided.
  * - Falls back to the plugin-bundled empty suppressions file when no project file exists.
  *
- * Uses a typed task (with declared inputs/outputs) so Gradle can track incremental work.
+ * Uses a typed task (with declared inputs/outputs) so Gradle can track incremental work and reuse build cache entries.
  * Generated files are build-time Checkstyle inputs only and are not packaged into consumer deliverables.
  */
+@CacheableTask
 internal abstract class WriteCheckstyleConfigTask : DefaultTask() {
     /** Target directory where generated Checkstyle files are written. */
     @get:OutputDirectory
@@ -53,17 +56,17 @@ internal abstract class WriteCheckstyleConfigTask : DefaultTask() {
         val checkstyleConfigFile = outputDir.file("checkstyle.xml").get().asFile
         val consumerCheckstyleInputFile = consumerCheckstyleFile.orNull?.asFile
         if (consumerCheckstyleInputFile != null) {
-            checkstyleConfigFile.writeText(consumerCheckstyleInputFile.readText())
+            checkstyleConfigFile.writeText(consumerCheckstyleInputFile.readText(UTF_8), UTF_8)
         } else {
-            checkstyleConfigFile.writeText(loadRequiredResource("checkstyle/checkstyle.xml"))
+            checkstyleConfigFile.writeText(loadRequiredResource("checkstyle/checkstyle.xml"), UTF_8)
         }
 
         val suppressionsFile = outputDir.file("suppressions.xml").get().asFile
         val consumerSuppressionsInputFile = consumerSuppressionsFile.orNull?.asFile
         if (consumerSuppressionsInputFile != null) {
-            suppressionsFile.writeText(consumerSuppressionsInputFile.readText())
+            suppressionsFile.writeText(consumerSuppressionsInputFile.readText(UTF_8), UTF_8)
         } else {
-            suppressionsFile.writeText(loadRequiredResource("checkstyle/empty-suppressions.xml"))
+            suppressionsFile.writeText(loadRequiredResource("checkstyle/empty-suppressions.xml"), UTF_8)
         }
     }
 
@@ -71,6 +74,6 @@ internal abstract class WriteCheckstyleConfigTask : DefaultTask() {
         val resource = requireNotNull(javaClass.classLoader.getResource(path)) {
             "Missing bundled resource at '$path'"
         }
-        return resource.readText()
+        return resource.readText(UTF_8)
     }
 }
