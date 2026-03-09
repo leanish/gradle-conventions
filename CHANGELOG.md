@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.3
+
+### Changed
+- Upgraded the Gradle wrapper from `9.3.1` to `9.4.0`.
+
+### Fixed
+- Fixed plugin validation failure on Gradle `9.4.0` by making the generated Checkstyle config task explicitly cacheable.
+- Added a regression test that applies the plugin to a consumer project and runs `checkstyleMain` on the current Gradle baseline.
+
 ## 0.5.2
 
 ### Added
